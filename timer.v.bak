@@ -1,0 +1,37 @@
+module timer(clock, length, start, out);
+input clock, start;
+input [31:0] length;	//currently in seconds
+output out;	//high while clock is active	
+
+reg [31:0] secondsCounter;
+reg [34:0] cyclesCounter;
+
+initial begin
+		out <= 1'b0;
+		secondsCounter <= 32'd0;
+		cyclesCounter <= 34'd0;
+end
+	
+	always @(posedge clock) begin
+		if (cyclesCounter == 20E9)
+			secondsCounter <= secondsCounter + 1;
+			cyclesCounter <= 34'd0;
+		end else
+			cyclesCounter <= cyclesCounter + 1;
+		end
+		
+		if(secondsCounter == length)
+			out <= 1'b0;
+			cyclesCounter <= 0;
+			secondsCOunter <= 0;
+		end
+	end
+	
+	always @(posedge start)
+		out <= 1'b1;
+		cyclesCounter <= 0;
+		secondsCOunter <= 0;
+	end
+
+	end
+endmodule
