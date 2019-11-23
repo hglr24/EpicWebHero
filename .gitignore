@@ -4,3 +4,4 @@ simulation/
 incremental_db/
 *.qws
 *.qsf
+*.qdf
