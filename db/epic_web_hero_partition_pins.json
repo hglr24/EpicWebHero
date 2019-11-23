@@ -2,7 +2,148 @@
 	"partitions" : [
 		{
 			"name" : "Top",
-			"pins" : []
+			"pins" : [
+				{
+					"name" : "out",
+					"strict" : false
+				},
+				{
+					"name" : "clock",
+					"strict" : false
+				},
+				{
+					"name" : "start",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[0]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[1]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[2]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[3]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[4]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[5]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[6]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[7]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[8]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[9]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[11]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[10]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[12]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[13]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[14]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[15]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[16]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[17]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[18]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[19]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[20]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[21]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[22]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[23]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[24]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[25]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[26]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[27]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[28]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[29]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[30]",
+					"strict" : false
+				},
+				{
+					"name" : "timerLength[31]",
+					"strict" : false
+				}
+			]
 		}
 	]
 }
