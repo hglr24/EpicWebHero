@@ -1,0 +1,15 @@
+module random_num_generator(clock, min, max, ranNum);
+input clock;
+input [31:0] min, max;	//defining the range of the desired value
+output [31:0] ranNum;	//random value produced within the designated range
+
+reg [31:0] ranNum;
+
+	initial begin
+		ranNum <= 0;
+	end
+	
+	always @(posedge clock) begin
+		ranNum = $random
+	end
+endmodule

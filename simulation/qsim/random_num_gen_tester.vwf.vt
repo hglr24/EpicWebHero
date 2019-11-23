@@ -1,0 +1,738 @@
+// Copyright (C) 1991-2016 Altera Corporation. All rights reserved.
+// Your use of Altera Corporation's design tools, logic functions 
+// and other software and tools, and its AMPP partner logic 
+// functions, and any output files from any of the foregoing 
+// (including device programming or simulation files), and any 
+// associated documentation or information are expressly subject 
+// to the terms and conditions of the Altera Program License 
+// Subscription Agreement, the Altera Quartus Prime License Agreement,
+// the Altera MegaCore Function License Agreement, or other 
+// applicable license agreement, including, without limitation, 
+// that your use is for the sole purpose of programming logic 
+// devices manufactured by Altera and sold by Altera or its 
+// authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+// *****************************************************************************
+// This file contains a Verilog test bench with test vectors .The test vectors  
+// are exported from a vector file in the Quartus Waveform Editor and apply to  
+// the top level entity of the current Quartus project .The user can use this   
+// testbench to simulate his design using a third-party simulation tool .       
+// *****************************************************************************
+// Generated on "11/17/2019 09:30:35"
+                                                                                
+// Verilog Test Bench (with test vectors) for design :                          random_num_gen
+// 
+// Simulation tool : 3rd Party
+// 
+
+`timescale 1 ps/ 1 ps
+module random_num_gen_vlg_vec_tst();
+// constants                                           
+// general purpose registers
+reg clock;
+reg [31:0] max;
+reg [31:0] min;
+reg [31:0] score;
+reg [31:0] timeElapsed;
+// wires                                               
+wire [31:0] ranNum;
+
+// assign statements (if any)                          
+random_num_gen i1 (
+// port map - connection between master ports and signals/registers   
+	.clock(clock),
+	.max(max),
+	.min(min),
+	.ranNum(ranNum),
+	.score(score),
+	.timeElapsed(timeElapsed)
+);
+initial 
+begin 
+#1000000 $finish;
+end 
+
+// clock
+always
+begin
+	clock = 1'b0;
+	clock = #10000 1'b1;
+	#10000;
+end 
+// max[ 31 ]
+initial
+begin
+	max[31] = 1'b0;
+end 
+// max[ 30 ]
+initial
+begin
+	max[30] = 1'b0;
+end 
+// max[ 29 ]
+initial
+begin
+	max[29] = 1'b0;
+end 
+// max[ 28 ]
+initial
+begin
+	max[28] = 1'b0;
+end 
+// max[ 27 ]
+initial
+begin
+	max[27] = 1'b0;
+end 
+// max[ 26 ]
+initial
+begin
+	max[26] = 1'b0;
+end 
+// max[ 25 ]
+initial
+begin
+	max[25] = 1'b0;
+end 
+// max[ 24 ]
+initial
+begin
+	max[24] = 1'b0;
+end 
+// max[ 23 ]
+initial
+begin
+	max[23] = 1'b0;
+end 
+// max[ 22 ]
+initial
+begin
+	max[22] = 1'b0;
+end 
+// max[ 21 ]
+initial
+begin
+	max[21] = 1'b0;
+end 
+// max[ 20 ]
+initial
+begin
+	max[20] = 1'b0;
+end 
+// max[ 19 ]
+initial
+begin
+	max[19] = 1'b0;
+end 
+// max[ 18 ]
+initial
+begin
+	max[18] = 1'b0;
+end 
+// max[ 17 ]
+initial
+begin
+	max[17] = 1'b0;
+end 
+// max[ 16 ]
+initial
+begin
+	max[16] = 1'b0;
+end 
+// max[ 15 ]
+initial
+begin
+	max[15] = 1'b0;
+end 
+// max[ 14 ]
+initial
+begin
+	max[14] = 1'b0;
+end 
+// max[ 13 ]
+initial
+begin
+	max[13] = 1'b0;
+end 
+// max[ 12 ]
+initial
+begin
+	max[12] = 1'b0;
+end 
+// max[ 11 ]
+initial
+begin
+	max[11] = 1'b0;
+end 
+// max[ 10 ]
+initial
+begin
+	max[10] = 1'b0;
+end 
+// max[ 9 ]
+initial
+begin
+	max[9] = 1'b0;
+end 
+// max[ 8 ]
+initial
+begin
+	max[8] = 1'b0;
+	max[8] = #10000 1'b1;
+	max[8] = #20000 1'b0;
+end 
+// max[ 7 ]
+initial
+begin
+	max[7] = 1'b0;
+	max[7] = #10000 1'b1;
+	max[7] = #20000 1'b0;
+end 
+// max[ 6 ]
+initial
+begin
+	max[6] = 1'b0;
+	max[6] = #10000 1'b1;
+	max[6] = #20000 1'b0;
+end 
+// max[ 5 ]
+initial
+begin
+	max[5] = 1'b0;
+	max[5] = #10000 1'b1;
+	max[5] = #20000 1'b0;
+end 
+// max[ 4 ]
+initial
+begin
+	max[4] = 1'b0;
+	max[4] = #10000 1'b1;
+	max[4] = #20000 1'b0;
+end 
+// max[ 3 ]
+initial
+begin
+	max[3] = 1'b0;
+end 
+// max[ 2 ]
+initial
+begin
+	max[2] = 1'b0;
+	max[2] = #10000 1'b1;
+	max[2] = #20000 1'b0;
+end 
+// max[ 1 ]
+initial
+begin
+	max[1] = 1'b0;
+end 
+// max[ 0 ]
+initial
+begin
+	max[0] = 1'b0;
+end 
+// min[ 31 ]
+initial
+begin
+	min[31] = 1'b0;
+end 
+// min[ 30 ]
+initial
+begin
+	min[30] = 1'b0;
+end 
+// min[ 29 ]
+initial
+begin
+	min[29] = 1'b0;
+end 
+// min[ 28 ]
+initial
+begin
+	min[28] = 1'b0;
+end 
+// min[ 27 ]
+initial
+begin
+	min[27] = 1'b0;
+end 
+// min[ 26 ]
+initial
+begin
+	min[26] = 1'b0;
+end 
+// min[ 25 ]
+initial
+begin
+	min[25] = 1'b0;
+end 
+// min[ 24 ]
+initial
+begin
+	min[24] = 1'b0;
+end 
+// min[ 23 ]
+initial
+begin
+	min[23] = 1'b0;
+end 
+// min[ 22 ]
+initial
+begin
+	min[22] = 1'b0;
+end 
+// min[ 21 ]
+initial
+begin
+	min[21] = 1'b0;
+end 
+// min[ 20 ]
+initial
+begin
+	min[20] = 1'b0;
+end 
+// min[ 19 ]
+initial
+begin
+	min[19] = 1'b0;
+end 
+// min[ 18 ]
+initial
+begin
+	min[18] = 1'b0;
+end 
+// min[ 17 ]
+initial
+begin
+	min[17] = 1'b0;
+end 
+// min[ 16 ]
+initial
+begin
+	min[16] = 1'b0;
+end 
+// min[ 15 ]
+initial
+begin
+	min[15] = 1'b0;
+end 
+// min[ 14 ]
+initial
+begin
+	min[14] = 1'b0;
+end 
+// min[ 13 ]
+initial
+begin
+	min[13] = 1'b0;
+end 
+// min[ 12 ]
+initial
+begin
+	min[12] = 1'b0;
+end 
+// min[ 11 ]
+initial
+begin
+	min[11] = 1'b0;
+end 
+// min[ 10 ]
+initial
+begin
+	min[10] = 1'b0;
+end 
+// min[ 9 ]
+initial
+begin
+	min[9] = 1'b0;
+end 
+// min[ 8 ]
+initial
+begin
+	min[8] = 1'b0;
+	min[8] = #10000 1'b1;
+	min[8] = #20000 1'b0;
+end 
+// min[ 7 ]
+initial
+begin
+	min[7] = 1'b0;
+	min[7] = #10000 1'b1;
+	min[7] = #20000 1'b0;
+end 
+// min[ 6 ]
+initial
+begin
+	min[6] = 1'b0;
+end 
+// min[ 5 ]
+initial
+begin
+	min[5] = 1'b0;
+end 
+// min[ 4 ]
+initial
+begin
+	min[4] = 1'b0;
+	min[4] = #10000 1'b1;
+	min[4] = #20000 1'b0;
+end 
+// min[ 3 ]
+initial
+begin
+	min[3] = 1'b0;
+end 
+// min[ 2 ]
+initial
+begin
+	min[2] = 1'b0;
+end 
+// min[ 1 ]
+initial
+begin
+	min[1] = 1'b0;
+end 
+// min[ 0 ]
+initial
+begin
+	min[0] = 1'b0;
+end 
+// score[ 31 ]
+initial
+begin
+	score[31] = 1'b0;
+end 
+// score[ 30 ]
+initial
+begin
+	score[30] = 1'b0;
+end 
+// score[ 29 ]
+initial
+begin
+	score[29] = 1'b0;
+end 
+// score[ 28 ]
+initial
+begin
+	score[28] = 1'b0;
+end 
+// score[ 27 ]
+initial
+begin
+	score[27] = 1'b0;
+end 
+// score[ 26 ]
+initial
+begin
+	score[26] = 1'b0;
+end 
+// score[ 25 ]
+initial
+begin
+	score[25] = 1'b0;
+end 
+// score[ 24 ]
+initial
+begin
+	score[24] = 1'b0;
+end 
+// score[ 23 ]
+initial
+begin
+	score[23] = 1'b0;
+end 
+// score[ 22 ]
+initial
+begin
+	score[22] = 1'b0;
+end 
+// score[ 21 ]
+initial
+begin
+	score[21] = 1'b0;
+end 
+// score[ 20 ]
+initial
+begin
+	score[20] = 1'b0;
+end 
+// score[ 19 ]
+initial
+begin
+	score[19] = 1'b0;
+end 
+// score[ 18 ]
+initial
+begin
+	score[18] = 1'b0;
+end 
+// score[ 17 ]
+initial
+begin
+	score[17] = 1'b0;
+end 
+// score[ 16 ]
+initial
+begin
+	score[16] = 1'b0;
+end 
+// score[ 15 ]
+initial
+begin
+	score[15] = 1'b0;
+end 
+// score[ 14 ]
+initial
+begin
+	score[14] = 1'b0;
+end 
+// score[ 13 ]
+initial
+begin
+	score[13] = 1'b0;
+end 
+// score[ 12 ]
+initial
+begin
+	score[12] = 1'b0;
+end 
+// score[ 11 ]
+initial
+begin
+	score[11] = 1'b0;
+end 
+// score[ 10 ]
+initial
+begin
+	score[10] = 1'b0;
+end 
+// score[ 9 ]
+initial
+begin
+	score[9] = 1'b0;
+end 
+// score[ 8 ]
+initial
+begin
+	score[8] = 1'b0;
+end 
+// score[ 7 ]
+initial
+begin
+	score[7] = 1'b0;
+	score[7] = #10000 1'b1;
+	score[7] = #20000 1'b0;
+end 
+// score[ 6 ]
+initial
+begin
+	score[6] = 1'b0;
+end 
+// score[ 5 ]
+initial
+begin
+	score[5] = 1'b0;
+	score[5] = #10000 1'b1;
+	score[5] = #20000 1'b0;
+end 
+// score[ 4 ]
+initial
+begin
+	score[4] = 1'b0;
+end 
+// score[ 3 ]
+initial
+begin
+	score[3] = 1'b0;
+end 
+// score[ 2 ]
+initial
+begin
+	score[2] = 1'b0;
+end 
+// score[ 1 ]
+initial
+begin
+	score[1] = 1'b0;
+end 
+// score[ 0 ]
+initial
+begin
+	score[0] = 1'b0;
+end 
+// timeElapsed[ 31 ]
+initial
+begin
+	timeElapsed[31] = 1'b0;
+end 
+// timeElapsed[ 30 ]
+initial
+begin
+	timeElapsed[30] = 1'b0;
+end 
+// timeElapsed[ 29 ]
+initial
+begin
+	timeElapsed[29] = 1'b0;
+end 
+// timeElapsed[ 28 ]
+initial
+begin
+	timeElapsed[28] = 1'b0;
+end 
+// timeElapsed[ 27 ]
+initial
+begin
+	timeElapsed[27] = 1'b0;
+end 
+// timeElapsed[ 26 ]
+initial
+begin
+	timeElapsed[26] = 1'b0;
+end 
+// timeElapsed[ 25 ]
+initial
+begin
+	timeElapsed[25] = 1'b0;
+end 
+// timeElapsed[ 24 ]
+initial
+begin
+	timeElapsed[24] = 1'b0;
+end 
+// timeElapsed[ 23 ]
+initial
+begin
+	timeElapsed[23] = 1'b0;
+end 
+// timeElapsed[ 22 ]
+initial
+begin
+	timeElapsed[22] = 1'b0;
+end 
+// timeElapsed[ 21 ]
+initial
+begin
+	timeElapsed[21] = 1'b0;
+end 
+// timeElapsed[ 20 ]
+initial
+begin
+	timeElapsed[20] = 1'b0;
+end 
+// timeElapsed[ 19 ]
+initial
+begin
+	timeElapsed[19] = 1'b0;
+end 
+// timeElapsed[ 18 ]
+initial
+begin
+	timeElapsed[18] = 1'b0;
+end 
+// timeElapsed[ 17 ]
+initial
+begin
+	timeElapsed[17] = 1'b0;
+end 
+// timeElapsed[ 16 ]
+initial
+begin
+	timeElapsed[16] = 1'b0;
+end 
+// timeElapsed[ 15 ]
+initial
+begin
+	timeElapsed[15] = 1'b0;
+end 
+// timeElapsed[ 14 ]
+initial
+begin
+	timeElapsed[14] = 1'b0;
+end 
+// timeElapsed[ 13 ]
+initial
+begin
+	timeElapsed[13] = 1'b0;
+end 
+// timeElapsed[ 12 ]
+initial
+begin
+	timeElapsed[12] = 1'b0;
+	timeElapsed[12] = #10000 1'b1;
+	timeElapsed[12] = #20000 1'b0;
+end 
+// timeElapsed[ 11 ]
+initial
+begin
+	timeElapsed[11] = 1'b0;
+end 
+// timeElapsed[ 10 ]
+initial
+begin
+	timeElapsed[10] = 1'b0;
+	timeElapsed[10] = #10000 1'b1;
+	timeElapsed[10] = #20000 1'b0;
+end 
+// timeElapsed[ 9 ]
+initial
+begin
+	timeElapsed[9] = 1'b0;
+end 
+// timeElapsed[ 8 ]
+initial
+begin
+	timeElapsed[8] = 1'b0;
+end 
+// timeElapsed[ 7 ]
+initial
+begin
+	timeElapsed[7] = 1'b0;
+	timeElapsed[7] = #10000 1'b1;
+	timeElapsed[7] = #20000 1'b0;
+end 
+// timeElapsed[ 6 ]
+initial
+begin
+	timeElapsed[6] = 1'b0;
+end 
+// timeElapsed[ 5 ]
+initial
+begin
+	timeElapsed[5] = 1'b0;
+	timeElapsed[5] = #10000 1'b1;
+	timeElapsed[5] = #20000 1'b0;
+end 
+// timeElapsed[ 4 ]
+initial
+begin
+	timeElapsed[4] = 1'b0;
+end 
+// timeElapsed[ 3 ]
+initial
+begin
+	timeElapsed[3] = 1'b0;
+	timeElapsed[3] = #10000 1'b1;
+	timeElapsed[3] = #20000 1'b0;
+end 
+// timeElapsed[ 2 ]
+initial
+begin
+	timeElapsed[2] = 1'b0;
+end 
+// timeElapsed[ 1 ]
+initial
+begin
+	timeElapsed[1] = 1'b0;
+	timeElapsed[1] = #10000 1'b1;
+	timeElapsed[1] = #20000 1'b0;
+end 
+// timeElapsed[ 0 ]
+initial
+begin
+	timeElapsed[0] = 1'b0;
+end 
+endmodule
+
