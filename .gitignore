@@ -2,3 +2,5 @@ db/
 output_files/
 simulation/
 incremental_db/
+*.qws
+*.qsf
