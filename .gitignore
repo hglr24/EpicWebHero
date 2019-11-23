@@ -5,3 +5,4 @@ incremental_db/
 *.qws
 *.qsf
 *.qdf
+*.bak
