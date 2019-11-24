@@ -6,3 +6,7 @@ incremental_db/
 *.qsf
 *.qdf
 *.bak
+*.done
+*.rpt
+*.smsg
+*.summary
