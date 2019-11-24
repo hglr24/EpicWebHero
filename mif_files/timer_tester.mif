@@ -1,0 +1,32 @@
+DEPTH = 4096;
+WIDTH = 32;
+ADDRESS_RADIX = DEC;
+DATA_RADIX = BIN;
+CONTENT
+BEGIN
+0000 : 00101010100000000000000000000001; -- addi $r10, $r0, 1	#$r10 = 1
+
+0001 : 11000000000000000000000000000010; -- timera 2		#start 1 second timer
+
+0002 : 00000001000101000000000000000000; -- add $r4, $r10, $r0	#setting active target 1 to be target 1
+
+0003 : 00110001100101011111111111111111; -- 	blt $r6, $r10, loopa	#branch to loopa until $r6 = 0, ie timera is done
+
+0004 : 00101010100000000000000000000010; -- addi $r10, $r0, 2	#$r10 = 2
+
+0005 : 11001000000000000000000000000010; -- timerb 2		#start 1 second timer
+
+0006 : 00000001000101000000000000000000; -- add $r4, $r10, $r0	#setting active target 1 to be target 2
+
+0007 : 00110001110101011111111111111111; -- 	blt $r7, $r10, loopb	#branch to loopb until $r7 = 0, ie timerb is done
+
+0008 : 00101010100000000000000000000011; -- addi $r10, $r0, 3	#$r10 = 3
+
+0009 : 11001000000000000000000000000011; -- timerb 3		#start 1 second timer
+
+0010 : 00000001000101000000000000000000; -- add $r4, $r10, $r0	#setting active target 1 to be target 3
+
+0011 : 00110010000101011111111111111111; -- 	blt $r8, $r10, loopc	#branch to loopb until $r8 = 0, ie timerc is done
+
+[0012..4095] : 00000000000000000000000000000000;
+END;
