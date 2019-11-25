@@ -1,0 +1,18 @@
+{
+	"$bp": 1,
+	"$t1hit": 2,
+	"$t2hit": 3,
+	"$t1active": 4,
+	"$t2active": 5,
+	"$timer1": 6,
+	"$timer2": 7,
+	"$gametimer": 8,
+	"$score": 9,
+	"$civilian1": 10,
+	"$civilian2": 11,
+	"$civilian3": 12,
+	"$civilianscore": 13,
+	"$villainscore": 14,
+	"$one": 15,
+	"$rand": 16
+}
