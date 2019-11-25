@@ -1,24 +1,34 @@
-module epic_web_hero (clock, reset);
+module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_l, target_a, target_b, 
+								score_digit_a, score_digit_b, score_digit_c, score_digit_d);
 
-	/*
-	PIN ASSIGNMENTS:
-		Y2 - 50Mhz Clock
-		M23 - Reset Button
-		AB22 - GPIO[0] - Right Glove Flex Sensor
-		AC15 - GPIO[1] - Right Glove Laser Enable
-		AB21 - GPIO[2] - Left Glove Flex Sensor
-		Y17  - GPIO[3] - Left Glove Laser Enable
-		...
-	*/
-
-	input clock, reset;
+	input clock, reset, flex_l, flex_r;
+	input [9:0] photo_array; // todo
+	
+	output laser_r, laser_l;
+	output [3:0] target_a, target_b; // todo
+	output [6:0] score_digit_a, score_digit_b, score_digit_c, score_digit_d;
+	
+	wire [31:0] score; // current game score
 	
 	/** EXT. HARDWARE INTERACTION COMPONENTS BELOW **/
 	
+	// declare score converter
+	
+	score_converter s_c(score, score_digit_a, score_digit_b, score_digit_c, score_digit_d); // D is LSD, A is MSD
+	
 	// declare laser drivers for each glove
 	
-	laser_driver right_glove_laser(.clock(clock), .in(), .out()); //TODO
-	laser_driver left_glove_laser(.clock(clock), .in(), .out()); //TODO
+	laser_driver right_glove_laser(.clock(clock), .in(flex_r), .out(laser_r));
+	laser_driver left_glove_laser(.clock(clock), .in(flex_l), .out(laser_l));
+	
+	/** NEW PROCESSOR/CONTROL COMPONENTS BELOW **/
+	
+	wire [3:0] rand_num_ten;
+	random_num_gen ewh_rng(.score(score), .clock(clock), .ranNumTen(rand_num_ten));
+	wire timer_done;
+	wire [31:0] timer_length;
+	timer ewh_timer(.clock(clock), .timerLength(timer_length), .start(), .out(timer_done)); // todo is start necessary?
+	target_selector ewh_targ_sel();
 	
 	/** PROCESSOR COMPONENTS BELOW **/
 	
