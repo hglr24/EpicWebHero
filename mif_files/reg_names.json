@@ -14,5 +14,10 @@
 	"$civilianscore": 13,
 	"$villainscore": 14,
 	"$one": 15,
-	"$rand": 16
+	"$rand": 16,
+	"$scorethreshold": 17,
+	"$scoreincrement": 18,
+	"$timeoffset": 19,
+	"$timermax": 20,
+	"$civilian4": 21
 }
