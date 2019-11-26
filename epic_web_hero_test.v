@@ -42,21 +42,24 @@ module epic_web_hero_test (clock, reset, photo_array, flex_r, flex_l, laser_r, l
 		targetIndex <= 0;
 		target_a <= targetIndex;
 		a <= 1;
+		score <= 0;
 	end
 
 
-always @(posedge photo_array[targetIndex]) begin
-	targetIndex <= targetIndex + 1;
-	score <= score + 100;
-	if(targetIndex == 32'd10) begin
-		a = ~a;
-		targetIndex <= 0;
-	end 
-	else if (a == 1) begin
-		target_a <= targetIndex;
-	end
-	else begin
-		target_b <= targetIndex;
+always @(posedge clock) begin
+	if (photo_array[0] == 0) begin
+		targetIndex <= targetIndex + 1;
+		score <= score + 100;
+		if(targetIndex == 32'd10) begin
+			a <= ~a;
+			targetIndex <= 0;
+		end 
+		else if (a == 1) begin
+			target_a <= targetIndex;
+		end
+		else begin
+			target_b <= targetIndex;
+		end
 	end
 end
 	 
