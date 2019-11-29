@@ -6,7 +6,11 @@ module bypass_control(fd_inst, dx_inst, xm_inst, mw_inst,
 	ctrl_writeEnable_xm, ctrl_writeEnable_mw, control_storew_fd, control_data_select_dx,
 	control_bex_fd, control_bex_dx, control_bex_xm, control_bex_mw,
 	control_setx_fd, control_setx_dx, control_setx_xm, control_setx_mw,
-	bypass_aluinA, bypass_dx_regB, bypass_xm_data, control_stall, bypass_dw_regA, bypass_dw_regB);
+	bypass_aluinA, bypass_dx_regB, bypass_xm_data, control_stall, bypass_dw_regA, bypass_dw_regB,
+	control_timera_dx, control_timerb_dx, control_timerc_dx,
+	control_timera_xm, control_timerb_xm, control_timerc_xm,
+	control_timera_mw, control_timerb_mw, control_timerc_mw,
+	control_timera_fd, control_timerb_fd, control_timerc_fd);
 
 	input [31:0] fd_inst, dx_inst, xm_inst, mw_inst;
 	input control_j_jal_dx, control_branch_lessthn_dx, control_read_from_rd_dx, // assign these inputs from outside
@@ -15,7 +19,11 @@ module bypass_control(fd_inst, dx_inst, xm_inst, mw_inst,
 		control_j_jal_fd, control_branch_lessthn_fd, control_read_from_rd_fd,
 		control_bex_fd, control_bex_dx, control_bex_xm, control_bex_mw,
 		control_setx_fd, control_setx_dx, control_setx_xm, control_setx_mw,
-		ctrl_writeEnable_xm, ctrl_writeEnable_mw, control_storew_fd, control_data_select_dx;
+		ctrl_writeEnable_xm, ctrl_writeEnable_mw, control_storew_fd, control_data_select_dx,
+		control_timera_dx, control_timerb_dx, control_timerc_dx,
+		control_timera_xm, control_timerb_xm, control_timerc_xm,
+		control_timera_mw, control_timerb_mw, control_timerc_mw,
+		control_timera_fd, control_timerb_fd, control_timerc_fd;
 	
 	output [1:0] bypass_aluinA, bypass_dx_regB;
 	output bypass_xm_data, control_stall, bypass_dw_regA, bypass_dw_regB;
@@ -34,7 +42,7 @@ module bypass_control(fd_inst, dx_inst, xm_inst, mw_inst,
 	mux_2 setx_mux(.in1(wreg_mux1_out_dx), .in2(5'd30), .select(control_setx_dx), .out(ctrl_writeReg_dx));
 	
 	// always $rs except for blt, when it is $rd
-	mux_2 readRegAMux(.in1(dx_inst[21:17]), .in2(dx_inst[26:22]), .select(control_branch_lessthn_dx), .out(ctrl_readRegA1_dx));
+	mux_2 readRegAMux(.in1(dx_inst[21:17]), .in2(dx_inst[26:22]), .select(control_branch_lessthn_dx || control_timera_dx || control_timerb_dx || control_timerc_dx), .out(ctrl_readRegA1_dx));
 	// or bex, for which it is $rstatus
 	wire [5:0] ctrl_readRegA1_dx;
 	mux_2 readRegAMux2(.in1(ctrl_readRegA1_dx), .in2(5'd30), .select(control_bex_dx), .out(ctrl_readRegA_dx));
@@ -57,7 +65,7 @@ module bypass_control(fd_inst, dx_inst, xm_inst, mw_inst,
 	mux_2 setx_mux22(.in1(wreg_mux1_out_xm), .in2(5'd30), .select(control_setx_xm), .out(ctrl_writeReg_xm));
 	
 	// always $rs except for blt, when it is $rd
-	mux_2 readRegAMux25(.in1(xm_inst[21:17]), .in2(xm_inst[26:22]), .select(control_branch_lessthn_xm), .out(ctrl_readRegA1_xm));
+	mux_2 readRegAMux25(.in1(xm_inst[21:17]), .in2(xm_inst[26:22]), .select(control_branch_lessthn_xm || control_timera_xm || control_timerb_xm || control_timerc_xm), .out(ctrl_readRegA1_xm));
 	// or bex, for which it is $rstatus
 	wire [5:0] ctrl_readRegA1_xm;
 	mux_2 readRegAMux2222(.in1(ctrl_readRegA1_xm), .in2(5'd30), .select(control_bex_xm), .out(ctrl_readRegA_xm));
@@ -81,7 +89,7 @@ module bypass_control(fd_inst, dx_inst, xm_inst, mw_inst,
 	mux_2 setx_mux3(.in1(wreg_mux1_out_mw), .in2(5'd30), .select(control_setx_mw), .out(ctrl_writeReg_mw));
 	
 	// always $rs except for blt, when it is $rd
-	mux_2 readRegAMux3(.in1(mw_inst[21:17]), .in2(mw_inst[26:22]), .select(control_branch_lessthn_mw), .out(ctrl_readRegA1_mw));
+	mux_2 readRegAMux3(.in1(mw_inst[21:17]), .in2(mw_inst[26:22]), .select(control_branch_lessthn_mw || control_timera_mw || control_timerb_mw || control_timerc_mw), .out(ctrl_readRegA1_mw));
 	// or bex, for which it is $rstatus
 	wire [5:0] ctrl_readRegA1_mw;
 	mux_2 readRegAMux233(.in1(ctrl_readRegA1_mw), .in2(5'd30), .select(control_bex_mw), .out(ctrl_readRegA_mw));
@@ -148,7 +156,7 @@ module bypass_control(fd_inst, dx_inst, xm_inst, mw_inst,
 	mux_2 setx_mux4(.in1(wreg_mux1_out_fd), .in2(5'd30), .select(control_setx_fd), .out(ctrl_writeReg_fd));
 	
 	// always $rs except for blt, when it is $rd
-	mux_2 readRegAMux4(.in1(fd_inst[21:17]), .in2(fd_inst[26:22]), .select(control_branch_lessthn_fd), .out(ctrl_readRegA1_fd));
+	mux_2 readRegAMux4(.in1(fd_inst[21:17]), .in2(fd_inst[26:22]), .select(control_branch_lessthn_fd || control_timera_fd || control_timerb_fd || control_timerc_fd), .out(ctrl_readRegA1_fd));
 	// or bex, for which it is $rstatus
 	wire [5:0] ctrl_readRegA1_fd;
 	mux_2 readRegAMux244(.in1(ctrl_readRegA1_fd), .in2(5'd30), .select(control_bex_fd), .out(ctrl_readRegA_fd));

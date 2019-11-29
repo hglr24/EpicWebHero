@@ -1,11 +1,21 @@
 module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_l, target_a, target_b, 
-								score_digit_a, score_digit_b, score_digit_c, score_digit_d);
+								score_digit_a, score_digit_b, score_digit_c, score_digit_d
+								
+								, ctrl_writeEnable, ctrl_writeReg, ctrl_readRegA, ctrl_readRegB, 
+								data_writeReg, data_readRegA, data_readRegB, rand_num, score);
+								
+	
+  output ctrl_writeEnable;
+  output [4:0] ctrl_readRegA, ctrl_readRegB, ctrl_writeReg;
+  output [31:0] data_readRegA, data_readRegB, data_writeReg, score;
+  output [3:0] rand_num;
+	
 
 	input clock, reset, flex_l, flex_r;
-	input [9:0] photo_array; // todo
+	input [9:0] photo_array;
 	
 	output laser_r, laser_l;
-	output [3:0] target_a, target_b; // todo
+	output [3:0] target_a, target_b;
 	output [6:0] score_digit_a, score_digit_b, score_digit_c, score_digit_d;
 	
 	wire [31:0] score; // current game score
@@ -23,12 +33,16 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
 	
 	/** NEW PROCESSOR/CONTROL COMPONENTS BELOW **/
 	
-	wire [3:0] rand_num_ten;
-	random_num_gen ewh_rng(.score(score), .clock(clock), .ranNumTen(rand_num_ten));
-	wire timer_done;
-	wire [31:0] timer_length;
-	timer ewh_timer(.clock(clock), .timerLength(timer_length), .start(), .out(timer_done)); // todo is start necessary?
-	target_selector ewh_targ_sel();
+	wire [3:0] rand_num;
+	random_num_gen ewh_rng(.score(score), .clock(clock), .ranNumTen(rand_num));
+	
+	wire timer_doneA, timer_doneB, timer_doneC;
+	wire timerstartA, timerstartB, timerstartC;
+	wire [31:0] timerlengthA, timerlengthB, timerlengthC;
+	
+	timer ewh_timer_a(.clock(clock), .timerLength(timerlengthA), .start(timerstartA), .out(timer_doneA));
+	timer ewh_timer_b(.clock(clock), .timerLength(timerlengthB), .start(timerstartB), .out(timer_doneB));
+	timer ewh_timer_c(.clock(clock), .timerLength(timerlengthC), .start(timerstartC), .out(timer_doneC));	
 	
 	/** PROCESSOR COMPONENTS BELOW **/
 	
@@ -63,18 +77,38 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
     wire ctrl_writeEnable;
     wire [4:0] ctrl_writeReg, ctrl_readRegA, ctrl_readRegB;
     wire [31:0] data_writeReg;
-    wire [31:0] data_readRegA, data_readRegB;
+    wire [31:0] data_readRegA, data_readRegB,
+					 bp_write, t1hit_write, t2hit_write, t1active_read, t2active_read,
+					 timer1_write, timer2_write, gametimer_write, score_read;
     regfile my_regfile(
         ~clock, // CHANGED
         ctrl_writeEnable,
-        reset,
+        reset, // reset
         ctrl_writeReg,
         ctrl_readRegA,
         ctrl_readRegB,
         data_writeReg,
         data_readRegA,
-        data_readRegB
+        data_readRegB,
+		  	
+		  bp_write, t1hit_write, t2hit_write, t1active_read, t2active_read,
+	     timer1_write, timer2_write, gametimer_write, score_read
     );
+	 
+	 assign bp_write[0] = ~reset; // inverted because button, soft reset, don't need to latch because it will see it in the game loop if held for a reasonable amount of time.
+	 assign timer1_write[0] = timer_doneA;
+	 assign timer2_write[0] = timer_doneB;
+	 assign gametimer_write[0] = timer_doneC;
+	 assign score = score_read;
+	 assign target_a = t1active_read[3:0];
+	 assign target_b = t2active_read[3:0];
+	 
+	 wire [3:0] target_a_old, target_b_old;
+	 register target_a_reg(.w(target_a), .clock(clock), .clr(1'b0), .w_en(1'b1), .r(target_a_old));
+	 register target_b_reg(.w(target_b), .clock(clock), .clr(1'b0), .w_en(1'b1), .r(target_b_old));
+	 
+	 sr_latch ta_sr(.r(target_a != target_a_old), .s(photo_array[target_a]), .q(t1hit_write[0])); // latch these until target_a, target_b change
+	 sr_latch tb_sr(.r(target_b != target_b_old), .s(photo_array[target_b]), .q(t2hit_write[0]));
 
     /** PROCESSOR **/
     processor my_processor(
@@ -99,7 +133,10 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
         ctrl_readRegB,                  // O: Register to read from port B of regfile
         data_writeReg,                  // O: Data to write to for regfile
         data_readRegA,                  // I: Data from port A of regfile
-        data_readRegB                   // I: Data from port B of regfile
+        data_readRegB,                  // I: Data from port B of regfile
+		  rand_num,
+		  timerstartA, timerstartB, timerstartC,
+		  timerlengthA, timerlengthB, timerlengthC
 	 );
 
 endmodule

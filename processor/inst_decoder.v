@@ -1,11 +1,11 @@
 module inst_decoder(inst, control_branch_neq, control_branch_lessthn, control_write_en, control_use_imm, control_data_select,
 	control_storew, control_jump, control_j_jal, control_set_ex, control_branch_ex, control_read_from_rd, control_not_rtype,
-	control_mult, control_div);
+	control_mult, control_div, control_rand, control_timera, control_timerb, control_timerc);
 
 	input [31:0] inst;
 	output control_branch_neq, control_branch_lessthn, control_write_en, control_use_imm, control_data_select,
 		control_storew, control_jump, control_j_jal, control_set_ex, control_branch_ex, control_read_from_rd, control_not_rtype,
-		control_mult, control_div;
+		control_mult, control_div, control_rand, control_timera, control_timerb, control_timerc;
 	
 	wire [4:0] opcode;
 	assign opcode = inst[31:27];
@@ -48,11 +48,15 @@ module inst_decoder(inst, control_branch_neq, control_branch_lessthn, control_wr
 	8				lw
 	21				setx
 	22				bex	
+	24				timera
+	25				timerb
+	26				timerc
+	27				randn
 	*/
 
 	assign control_branch_neq = dec_out[2] && not_nop; // bne
 	assign control_branch_lessthn = dec_out[6] && not_nop; // blt
-	assign control_write_en = (dec_out[8] || dec_out[0] || dec_out[3] || dec_out[5] || dec_out[21]) && not_nop; // lw, aluops, jal, addi, setx
+	assign control_write_en = (dec_out[8] || dec_out[0] || dec_out[3] || dec_out[5] || dec_out[21] || dec_out[27]) && not_nop; // lw, aluops, jal, addi, setx, randn
 	assign control_use_imm = (dec_out[5] || dec_out[7] || dec_out[8] || dec_out[21]) && not_nop; // addi, sw, lw, setx
 	assign control_data_select = dec_out[8] && not_nop; // lw
 	assign control_storew = dec_out[7] && not_nop; // sw
@@ -64,5 +68,9 @@ module inst_decoder(inst, control_branch_neq, control_branch_lessthn, control_wr
 	assign control_not_rtype = (not_rtype) && not_nop; // not add/sub/and/or/sll/sra/mul/div
 	assign control_mult = dec_out[0] && is_mult;
 	assign control_div = dec_out[0] && is_div;
+	assign control_rand = dec_out[27] && not_nop; // randn
+	assign control_timera = dec_out[24] && not_nop; // timera
+	assign control_timerb = dec_out[25] && not_nop; // timerb
+	assign control_timerc = dec_out[26] && not_nop; // timerc
 	
 endmodule

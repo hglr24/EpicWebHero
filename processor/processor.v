@@ -69,10 +69,13 @@ module processor(
 	ctrl_readRegB,                  // O: Register to read from port B of regfile
 	data_writeReg,                  // O: Data to write to for regfile
 	data_readRegA,                  // I: Data from port A of regfile
-	data_readRegB                   // I: Data from port B of regfile
+	data_readRegB,                  // I: Data from port B of regfile
+	rand_num,
+	timerstartA, timerstartB, timerstartC,
+	timerlengthA, timerlengthB, timerlengthC
 	
 	// TESTING
-	, pc_next,
+	/*, pc_next,
 	alu_result,
 	pc_curr,
 	control_stall,
@@ -82,14 +85,15 @@ module processor(
 	bypass_dx_regB,
 	fd_inst, dx_inst, xm_inst, mw_inst,
 	alu_inA, alu_inB,
-	bypass_dw_regA, bypass_dw_regB, dmem_addr
+	bypass_dw_regA, bypass_dw_regB, dmem_addr*/
 	);
 	
-	output [11:0] pc_next, pc_curr;
+	/*output [11:0] pc_next, pc_curr;
 	output [31:0] alu_result, dmem_addr;
 	output control_stall, control_flush, bypass_xm_data, bypass_dw_regA, bypass_dw_regB;
 	output [1:0] bypass_aluinA, bypass_dx_regB;
-	output [31:0] fd_inst, dx_inst, xm_inst, mw_inst, alu_inA, alu_inB;
+	output [31:0] fd_inst, dx_inst, xm_inst, mw_inst, alu_inA, alu_inB;*/
+
 	
 	// Control signals
 	input clock, reset;
@@ -109,6 +113,17 @@ module processor(
 	output [4:0] ctrl_writeReg, ctrl_readRegA, ctrl_readRegB;
 	output [31:0] data_writeReg;
 	input [31:0] data_readRegA, data_readRegB;
+	
+	// NEW STUFF
+	
+	// declare timer wires
+	
+	output [31:0] timerlengthA, timerlengthB, timerlengthC;
+	output timerstartA, timerstartB, timerstartC;
+	
+	// declare randgen wires
+	
+	input [3:0] rand_num;
 	
 	// declare multdiv
 	
@@ -165,7 +180,7 @@ module processor(
 	
 	stage_register fd_register(.w1(pc_past_md_check), .w4(orig_inst_post_stall), .clock(clock), .clr(reset), .w_en(stall_not && multdiv_stall_not), .r1(fd_pc_next), .r4(fd_inst));
 	stage_register dx_register(.w1(fd_pc_next), .w2(fd_regA_out), .w3(fd_regB_out), .w4(fd_inst_post_stall), .clock(clock), .clr(reset), .w_en(multdiv_stall_not), .r1(dx_pc_next), .r2(dx_regA), .r3(dx_regB), .r4(dx_inst));
-	stage_register xm_register(.w1(dx_pc_next), .w2(arith_result_or_ex), .w3(dx_regB_bypass), .w4(dx_inst_post_ex), .clock(clock), .clr(reset), .w_en(multdiv_stall_not), .r1(xm_pc_next), .r2(dmem_addr), .r3(data_pre_bp_mux), .r4(xm_inst));
+	stage_register xm_register(.w1(dx_pc_next), .w2(arith_or_ex_or_rand), .w3(dx_regB_bypass), .w4(dx_inst_post_ex), .clock(clock), .clr(reset), .w_en(multdiv_stall_not), .r1(xm_pc_next), .r2(dmem_addr), .r3(data_pre_bp_mux), .r4(xm_inst));
 	stage_register mw_register(.w1(xm_pc_next), .w2(dmem_addr), .w3(q_dmem), .w4(xm_inst), .clock(clock), .clr(reset), .w_en(multdiv_stall_not), .r1(mw_pc_next), .r2(mw_addr_out_long), .r3(mw_data_out), .r4(mw_inst));
 	
 	assign address_dmem = dmem_addr[11:0];
@@ -179,8 +194,8 @@ module processor(
 	// for setx
 	mux_2 setx_mux(.in1(wreg_mux1_out), .in2(5'd30), .select(control_setx_mw), .out(ctrl_writeReg));
 	
-	// always $rs except for blt, when it is $rd
-	mux_2 readRegAMux(.in1(fd_inst[21:17]), .in2(fd_inst[26:22]), .select(control_branch_lessthn_fd), .out(ctrl_readRegA1));
+	// always $rs except for blt, when it is $rd, or TIMERS for which it is also $rd
+	mux_2 readRegAMux(.in1(fd_inst[21:17]), .in2(fd_inst[26:22]), .select(control_branch_lessthn_fd || control_timera_fd || control_timerb_fd || control_timerc_fd), .out(ctrl_readRegA1));
 	// or bex, for which it is $rstatus
 	wire [5:0] ctrl_readRegA1;
 	mux_2 readRegAMux2(.in1(ctrl_readRegA1), .in2(5'd30), .select(control_bex_fd), .out(ctrl_readRegA));
@@ -244,24 +259,29 @@ module processor(
 	wire control_branch_neq, control_branch_lessthn, control_write_en, control_use_imm, control_data_select,
 		control_storew, control_jump, control_j_jal, control_set_ex, control_branch_ex, control_branch_lessthn_fd;
 		
-	wire control_read_from_rd, control_j_jal_mw, control_not_rtype, control_mult, control_div, control_setx_mw, control_setx, control_bex, control_bex_fd;
+	wire control_read_from_rd, control_j_jal_mw, control_not_rtype, control_mult, control_div, control_setx_mw, control_setx, control_bex, control_bex_fd,
+		control_rand, control_timera, control_timerb, control_timerc, control_timera_fd, control_timerb_fd, control_timerc_fd;
 	
 	// declare instruction decoders/control modules for each stage
 	// MAKE SURE CONTROL SIGNALS ARE BEING ACCESSED AT CORRECT STAGES!!!!
 	
 	inst_decoder dec_fd(.inst(fd_inst), .control_read_from_rd(control_read_from_rd), .control_branch_lessthn(control_branch_lessthn_fd),
-		.control_j_jal(control_j_jal_fd), .control_storew(control_storew_fd), .control_branch_ex(control_bex_fd), .control_set_ex(control_setx_fd));
+		.control_j_jal(control_j_jal_fd), .control_storew(control_storew_fd), .control_branch_ex(control_bex_fd), .control_set_ex(control_setx_fd),
+		.control_timera(control_timera_fd), .control_timerb(control_timerb_fd), .control_timerc(control_timerc_fd));
 	
 	inst_decoder dec_dx(.inst(dx_inst), .control_branch_neq(control_branch_neq), .control_branch_lessthn(control_branch_lessthn),
 		.control_use_imm(control_use_imm), .control_jump(control_jump), .control_j_jal(control_j_jal), .control_not_rtype(control_not_rtype),
 		.control_read_from_rd(control_read_from_rd_dx), .control_data_select(control_data_select_dx), .control_mult(control_mult), .control_div(control_div),
-		.control_set_ex(control_setx), .control_branch_ex(control_bex));
+		.control_set_ex(control_setx), .control_branch_ex(control_bex), .control_rand(control_rand), .control_timera(control_timera), 
+		.control_timerb(control_timerb), .control_timerc(control_timerc));
 		
 	inst_decoder dec_xm(.inst(xm_inst), .control_storew(control_storew), .control_branch_lessthn(control_branch_lessthn_xm), .control_j_jal(control_j_jal_xm),
-		.control_read_from_rd(control_read_from_rd_xm), .control_write_en(control_write_en_xm), .control_branch_ex(control_bex_xm), .control_set_ex(control_setx_xm));
+		.control_read_from_rd(control_read_from_rd_xm), .control_write_en(control_write_en_xm), .control_branch_ex(control_bex_xm), .control_set_ex(control_setx_xm),
+		.control_timera(control_timera_xm), .control_timerb(control_timerb_xm), .control_timerc(control_timerc_xm));
 		
 	inst_decoder dec_mw(.inst(mw_inst), .control_write_en(control_write_en), .control_data_select(control_data_select), .control_j_jal(control_j_jal_mw),
-		.control_branch_lessthn(control_branch_lessthn_mw), .control_read_from_rd(control_read_from_rd_mw), .control_set_ex(control_setx_mw), .control_branch_ex(control_bex_mw));
+		.control_branch_lessthn(control_branch_lessthn_mw), .control_read_from_rd(control_read_from_rd_mw), .control_set_ex(control_setx_mw), .control_branch_ex(control_bex_mw),
+		.control_timera(control_timera_mw), .control_timerb(control_timerb_mw), .control_timerc(control_timerc_mw));
 		
 	assign reg_data_select = control_data_select;
 	assign ctrl_writeEnable = control_write_en;
@@ -274,7 +294,8 @@ module processor(
 	wire [1:0] bypass_aluinA, bypass_dx_regB;
 	wire control_read_from_rd_dx, control_j_jal_xm, control_branch_lessthn_xm, control_branch_lessthn_mw,
 		control_read_from_rd_xm, control_read_from_rd_mw, control_write_en_xm, control_j_jal_fd, control_storew_fd, control_data_select_dx, control_stall,
-		bypass_dw_regA, bypass_dw_regB, control_bex_xm, control_bex_mw, control_setx_fd, control_setx_xm;
+		bypass_dw_regA, bypass_dw_regB, control_bex_xm, control_bex_mw, control_setx_fd, control_setx_xm,
+		control_timera_xm, control_timerb_xm, control_timerc_xm, control_timera_mw, control_timerb_mw, control_timerc_mw;
 	
 	bypass_control b_ctrl(.fd_inst(fd_inst), .dx_inst(dx_inst), .xm_inst(xm_inst), .mw_inst(mw_inst),
 	.control_j_jal_dx(control_j_jal), .control_branch_lessthn_dx(control_branch_lessthn), .control_read_from_rd_dx(control_read_from_rd_dx),
@@ -285,7 +306,11 @@ module processor(
 	.control_bex_fd(control_bex_fd), .control_bex_dx(control_bex), .control_bex_xm(control_bex_xm), .control_bex_mw(control_bex_mw),
 	.control_setx_fd(control_setx_fd), .control_setx_dx(control_setx), .control_setx_xm(control_setx_xm), .control_setx_mw(control_setx_mw),
 	.bypass_aluinA(bypass_aluinA), .bypass_dx_regB(bypass_dx_regB), .bypass_xm_data(bypass_xm_data), .control_stall(control_stall), 
-	.bypass_dw_regA(bypass_dw_regA), .bypass_dw_regB(bypass_dw_regB));
+	.bypass_dw_regA(bypass_dw_regA), .bypass_dw_regB(bypass_dw_regB),
+	.control_timera_dx(control_timera), .control_timerb_dx(control_timerb), .control_timerc_dx(control_timerc),
+	.control_timera_xm(control_timera_xm), .control_timerb_xm(control_timerb_xm), .control_timerc_xm(control_timerc_xm),
+	.control_timera_mw(control_timera_mw), .control_timerb_mw(control_timerb_mw), .control_timerc_mw(control_timerc_mw),
+	.control_timera_fd(control_timera_fd), .control_timerb_fd(control_timerb_fd), .control_timerc_fd(control_timerc_fd));
 	
 	// declare bypass muxes-- to DISABLE bypassing, ctrl+F for dx_regA_bypass and dx_regB_bypass and make dx_regA and dx_regB, set DMEM data in to data_pre_bp_mux
 	
@@ -348,8 +373,19 @@ module processor(
 	
 	// overwrite arithmetic result
 	
-	wire [31:0] arith_result_or_ex, arith_result_or_ex1;
+	wire [31:0] arith_result_or_ex, arith_result_or_ex1, arith_or_ex_or_rand;
 	mux_2 alu_or_ex(.in1(arithmetic_result), .in2(exception_val), .select(is_exception), .out(arith_result_or_ex1));
 	mux_2 aluex_or_setxT(.in1(arith_result_or_ex1), .in2(dx_inst[26:0]), .select(control_setx), .out(arith_result_or_ex));
+	mux_2 rand_mux(.in1(arith_result_or_ex), .in2(rand_num), .select(control_rand), .out(arith_or_ex_or_rand));
+	
+	// timers
+	
+	assign timerstartA = control_timera;
+	assign timerstartB = control_timerb;
+	assign timerstartC = control_timerc;
+	
+	register timerlengthregA(.w(dx_regA_bypass), .clock(clock), .clr(1'b0), .w_en(control_timera), .r(timerlengthA)); // timers reset with new lengths in execute
+	register timerlengthregB(.w(dx_regA_bypass), .clock(clock), .clr(1'b0), .w_en(control_timerb), .r(timerlengthB)); // assumes that a timer can be interrupted
+	register timerlengthregC(.w(dx_regA_bypass), .clock(clock), .clr(1'b0), .w_en(control_timerc), .r(timerlengthC));
 	
 endmodule
