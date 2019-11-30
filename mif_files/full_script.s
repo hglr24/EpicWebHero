@@ -1,6 +1,9 @@
 #To handle:	
 	# not letting two civilians be selected
 
+#assumptions
+	# the first 
+
 #initialize ie load constants
 addi $civilian1, $r0, 0		#$r10 = 0, target number of civilian 1
 addi $civilian2, $r0, 1		#$r11 = 1, target number of civilian 2
@@ -22,17 +25,18 @@ start:
 	add $score, $r0, $r0		#$score = 0
 	add $timeoffset, $r0, $r0	#$timeroffset = 0, this is subtracted from the base time for how long targets stay active
 	
-	timerc 60			#starting game timer, currently 60 seconds long
+	addi $r29, $r0, 60		#$r29 = 60, number of seconds the game will last
+	timerc $r29			#starting game timer, currently 60 seconds long
 	
 	#starting target 1
 	jal generaterand
-	add $t1active, $r0, $rand		#set new target
+	add $t0active, $r0, $rand		#set new target
 	sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 	timera $r29
 
 	#starting a new target 2
 	jal generaterand
-	add $t2active, $r0, $rand		#set new target
+	add $t1active, $r0, $rand		#set new target
 	sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 	sub $r29, $r29, 2			#initial timer for target 2 is two seconds shorter so that the targets are offset
 	timerb $r29
@@ -48,11 +52,11 @@ bne $bp, $r0, start
 #check score
 updatescore:
 	checkhit1:
-		bne $t1hit, $one, checkhit2	#if target 1 isnt hit, branch to check target 2
-		bne $civilian1, $t1active, villain1
-		bne $civilian2, $t1active, villain1
-		bne $civilian3, $t1active, villain1
-		bne $civilian4, $t1active, villain1
+		bne $t1hit, $one, checkhit2	#if target 0 isnt hit, branch to check target 1
+		bne $civilian1, $t0active, villain1
+		bne $civilian2, $t0active, villain1
+		bne $civilian3, $t0active, villain1
+		bne $civilian4, $t0active, villain1
 		
 		#if havent branched yet, hit a civilian
 		sub $score, $score, $civilianscore
@@ -62,18 +66,19 @@ updatescore:
 		add $score, $score, $villainscore
 		
 		#starting a new target 1
+		addi $activetarget, $r0, 1	#setting target that will be staying active as target 1
 		jal generaterand
-		add $t1active, $r0, $rand		#set new target
+		add $t0active, $r0, $rand		#set new target
 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 		timera $r29
 		
 
 	checkhit2:
-		bne $t2hit, $one, updatetimeoffset	#if target 1 isnt hit, branch to update time offset
-		bne $civilian1, $t2active, villain2
-		bne $civilian2, $t2active, villain2
-		bne $civilian3, $t2active, villain2
-		bne $civilian4, $t2active, villain2
+		bne $t2hit, $one, updatetimeoffset	#if target 0 isnt hit, branch to update time offset
+		bne $civilian1, $t1active, villain2
+		bne $civilian2, $t1active, villain2
+		bne $civilian3, $t1active, villain2
+		bne $civilian4, $t1active, villain2
 		
 		#if havent branch yet, hit a civilian
 		sub $score, $score, $civilianscore
@@ -83,8 +88,9 @@ updatescore:
 		add $score, $score, $villainscore
 
 		#starting a new target 2
+		addi $activetarget, $r0, 0	#setting target that will be staying active as 0
 		jal generaterand
-		add $t2active, $r0, $rand		#set new target
+		add $t1active, $r0, $rand		#set new target
 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 		timerb $r29
 	
@@ -99,25 +105,57 @@ timers:		#note: if change this name, it is jumped to and needs to be corrected
 		bne $timer1, $r0, timer2	#if the timer isnt done, branch to timer b
 		
 		#starting a new target 1
+		addi $activetarget, $r0, 1	#setting target that is staying active as 1
 		jal generaterand
-		add $t1active, $r0, $rand		#set new target
+		add $t0active, $r0, $rand		#set new target
 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 		timera $r29
 
 	timer2:
 		bne $timer2, $r0, gameloop
+		addi $activetarget, $r0, 0	#setting target to stay active as 0
 		jal generaterand
-		add $t2active, $r0, $rand		#set new target
+		add $t1active, $r0, $rand		#set new target
 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 		timerb $r29
 		j gameloop
 
+#generates a random number [0-9]
+#checks that the generated number is not the same as the current two active targets to ensure you don't get the same target two
+#times in a row and also don't set active1 and active2 to the same thing
+#also makes sure that two civilians are not active at once
+#IMPORTANT: before calling this function, set $activetarget to be 0 or 1 dependending on which active target register is going to be remaining active (ie 	#not replaced by this new random number - this is used for the no two civilians bit
 generaterand:
 	randn $rand
+	
+	#checking if the generated number is the same as the current active targets
+	equalactive0:
+		bne $rand, $t0active, equalactive1	#if same as active target 1, generate new random number
+		j generaterand
 	equalactive1:
-		bne $rand, $t1active, equalactive2	#if same as active target 1, generate new random number
+		bne $rand, $t1active, checkingcivilians	#if same as active target 2, generate new random number
 		j generaterand
-	equalactive2:
-		bne $rand, $t2active, equalactive2	#if same as active target 2, generate new random number
-		j generaterand
-	jr $ra
+	
+	#checking if the active that isnt being replaced is a civilian and, if it is, making sure the generated random number isnt a civilian too
+	checkingcivilians:
+	addi $r29, $r0, 5	#$r29 = 5, used for blt checking if a target is a civilian
+	#checking if active0 is staying on and if it's a civilian
+	active0:
+		bne $activetarget, $r0, active1		#if t0active is staying on, stay here and check active0 otherwise jump to check t1active
+			blt $t0active, $r29, activecivilian	#if t0active is a civilian, jump to activecivilian, if its not, jump to end
+				j endgeneraterand
+	#assuming if makes it to active 1 that active 1 is not being shut off
+	active1:
+		blt $t1active, $r29, activecivilian	#if active1 is a civilian, jump to active civilian, if it's not, jump to end
+			j endgeneraterand
+
+	#if active is a civilian (jump from previous branches), then checking of randn is a civilian
+	activecivilian:
+		addi $r29, $r0, 5	#$r29 = 5, used for blt checking if a target is a civilian
+		blt $rand, $r29, generaterand	#if randn is a civilian, generate a new random number
+			j endgeneraterand
+
+	endgeneraterand:
+		jr $ra
+
+	

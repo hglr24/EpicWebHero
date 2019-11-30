@@ -2,8 +2,8 @@
 	"$bp": 1,
 	"$t1hit": 2,
 	"$t2hit": 3,
-	"$t1active": 4,
-	"$t2active": 5,
+	"$t0active": 4,
+	"$t1active": 5,
 	"$timer1": 6,
 	"$timer2": 7,
 	"$gametimer": 8,
@@ -19,5 +19,6 @@
 	"$scoreincrement": 18,
 	"$timeoffset": 19,
 	"$timermax": 20,
-	"$civilian4": 21
+	"$civilian4": 21,
+	"$activetarget": 22
 }
