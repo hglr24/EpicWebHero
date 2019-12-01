@@ -1,7 +1,7 @@
 {
 	"$bp": 1,
-	"$t1hit": 2,
-	"$t2hit": 3,
+	"$t0hit": 2,
+	"$t1hit": 3,
 	"$t0active": 4,
 	"$t1active": 5,
 	"$timer1": 6,
