@@ -4,9 +4,163 @@ ADDRESS_RADIX = DEC;
 DATA_RADIX = BIN;
 CONTENT
 BEGIN
-0000 : 00101010100000000000000000000001; -- addi $r10, $r0, 1	#$r10 = 1
+0000 : 00101010100000000000000000000000; -- addi $civilian1, $r0, 0		#$r10 = 0, target number of civilian 1
 
-0001 : 00110000010101011111111111111111; -- 	blt $bp, $r10, waitButton	#if button register is < 1, branch back to waitButton
+0001 : 00101010110000000000000000000001; -- addi $civilian2, $r0, 1		#$r11 = 1, target number of civilian 2
 
-[0002..4095] : 00000000000000000000000000000000;
+0002 : 00101011000000000000000000000010; -- addi $civilian3, $r0, 2		#$r12 = 2, target number of civilian 3
+
+0003 : 00101101010000000000000000000011; -- addi $civilian4, $r0, 3		#$r21 = 3, target number of civilian 4
+
+0004 : 00101011010000000000000001100100; -- addi $civilianscore, $r0, 100	#$r13 = 100, score to be subtracted if civilian hit
+
+0005 : 00101011100000000000000011001000; -- addi $villainscore, $r0, 200	#$r14 = 200, score to be added if villain hit
+
+0006 : 00101011110000000000000000000001; -- addi $one, $r0, 1		#$r15 = 1, often need to compare a reg to number 1
+
+0007 : 00101100100000000000000111110100; -- addi $scoreincrement, $r0, 500	#$r18 = 500, every time the score threshold is met, it is incremented by 500
+
+0008 : 00101101000000000000000000001010; -- addi $timermax, $r0, 10		#$r20 = 10, number of seconds targets are on with a score of 0
+
+0009 : 00010000010111111111111111111111; -- 	bne $bp, $one, waitButton	#if button register ~= 1, branch back to waitButton
+
+0010 : 00101100010000000000000111110100; -- 	addi $scorethreshold, $r0, 500	#$scorethreshold = 500, every 500 pts the time the targets stay live decreases
+
+0011 : 00000010010000000000000000000000; -- 	add $score, $r0, $r0		#$score = 0
+
+0012 : 00000100110000000000000000000000; -- 	add $timeoffset, $r0, $r0	#$timeroffset = 0, this is subtracted from the base time for how long targets stay active
+
+0013 : 00101111010000000000000000111100; -- 	addi $r29, $r0, 60		#$r29 = 60, number of seconds the game will last
+
+0014 : 11010111010000000000000000000000; -- 	timerc $r29			#starting game timer, currently 60 seconds long
+
+0015 : 00011000000000000000000001000000; -- 	jal generaterand
+
+0016 : 00000001000000010000000000000000; -- 	add $t0active, $r0, $rand		#set new target
+
+0017 : 00000111011010010011000000000100; -- 	sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+
+0018 : 11000111010000000000000000000000; -- 	timera $r29
+
+0019 : 00011000000000000000000001000000; -- 	jal generaterand
+
+0020 : 00000001010000010000000000000000; -- 	add $t1active, $r0, $rand		#set new target
+
+0021 : 00000111011010010011000000000100; -- 	sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+
+0022 : 00000111011110100010000000000100; -- 	sub $r29, $r29, 2			#initial timer for target 2 is two seconds shorter so that the targets are offset
+
+0023 : 11001111010000000000000000000000; -- 	timerb $r29
+
+0024 : 00010010000111111111111111110000; -- bne $gametimer, $one, waitButton
+
+0025 : 00010000010000011111111111110000; -- bne $bp, $r0, start
+
+0026 : 00010000100111100000000000001010; -- 		bne $t0hit, $one, checkhit2	#if target 0 isnt hit, branch to check target 1
+
+0027 : 00101111010000000000000000000101; -- 		addi $r29, $r0, 5	#$r29 = 5
+
+0028 : 00110001001110100000000000000010; -- 		blt $t0active, $r29, civilian1	#branching if it's a civilian
+
+0029 : 00000010010100101110000000000000; -- 		add $score, $score, $villainscore
+
+0030 : 00001000000000000000000000100000; -- 		j starttarget1	#skip score for civilian
+
+0031 : 00000010010100101101000000000100; -- 		sub $score, $score, $civilianscore
+
+0032 : 00101101100000000000000000000001; -- 			addi $activetarget, $r0, 1	#setting target that will be staying active as target 1
+
+0033 : 00011000000000000000000001000000; -- 			jal generaterand
+
+0034 : 00000001000000010000000000000000; -- 			add $t0active, $r0, $rand		#set new target
+
+0035 : 00000111011010010011000000000100; -- 			sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+
+0036 : 11000111010000000000000000000000; -- 			timera $r29
+
+0037 : 00010000110111100000000000001010; -- 		bne $t1hit, $one, updatetimeoffset	#if target 1 isnt hit, branch to update time offset
+
+0038 : 00101111010000000000000000000101; -- 		addi $r29, $r0, 5	#$r29 = 5
+
+0039 : 00110001011110100000000000000010; -- 		blt $t1active, $r29, civilian2		#branch if hit target is civilian
+
+0040 : 00000010010100101110000000000000; -- 		add $score, $score, $villainscore
+
+0041 : 00001000000000000000000000101011; -- 		j starttarget2	#skip score for civilian
+
+0042 : 00000010010100101101000000000100; -- 		sub $score, $score, $civilianscore
+
+0043 : 00101101100000000000000000000000; -- 			addi $activetarget, $r0, 0	#setting target that will be staying active as 0
+
+0044 : 00011000000000000000000001000000; -- 			jal generaterand
+
+0045 : 00000001010000010000000000000000; -- 			add $t1active, $r0, $rand		#set new target
+
+0046 : 00000111011010010011000000000100; -- 			sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+
+0047 : 11001111010000000000000000000000; -- 			timerb $r29
+
+0048 : 00110010011000100000000000000010; -- 		blt $score, $scorethreshold, timers		#branch if the score isnt greater than the threshold
+
+0049 : 00000100011000110010000000000000; -- 		add $scorethreshold, $scorethreshold, $scoreincrement	#scorethreshold = scorethreshold + increment
+
+0050 : 00000100111001101111000000000000; -- 		add $timeoffset, $timeoffset, $one		#timeoffset++
+
+0051 : 00010001100000000000000000000101; -- 		bne $timer1, $r0, timer2	#if the timer isnt done, branch to timer 2
+
+0052 : 00101101100000000000000000000001; -- 		addi $activetarget, $r0, 1	#setting target that is staying active as 1
+
+0053 : 00011000000000000000000001000000; -- 		jal generaterand
+
+0054 : 00000001000000010000000000000000; -- 		add $t0active, $r0, $rand		#set new target
+
+0055 : 00000111011010010011000000000100; -- 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+
+0056 : 11000111010000000000000000000000; -- 		timera $r29
+
+0057 : 00010001110000011111111111011110; -- 		bne $timer2, $r0, gameloop	#if timer isn't done, branch to the game loop
+
+0058 : 00101101100000000000000000000000; -- 		addi $activetarget, $r0, 0	#setting target to stay active as 0
+
+0059 : 00011000000000000000000001000000; -- 		jal generaterand
+
+0060 : 00000001010000010000000000000000; -- 		add $t1active, $r0, $rand		#set new target
+
+0061 : 00000111011010010011000000000100; -- 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+
+0062 : 11001111010000000000000000000000; -- 		timerb $r29
+
+0063 : 00001000000000000000000000011000; -- j gameloop
+
+0064 : 11011100000000000000000000000000; -- 	randn $rand
+
+0065 : 00010100000010000000000000000001; -- 		bne $rand, $t0active, equalactive1	#if same as active target 1, generate new random number
+
+0066 : 00001000000000000000000001000000; -- 		j generaterand
+
+0067 : 00010100000010100000000000000001; -- 		bne $rand, $t1active, checkingcivilians	#if same as active target 2, generate new random number
+
+0068 : 00001000000000000000000001000000; -- 		j generaterand
+
+0069 : 00101111010000000000000000000101; -- 	addi $r29, $r0, 5	#$r29 = 5, used for blt checking if a target is a civilian
+
+0070 : 00010101100000000000000000000010; -- 		bne $activetarget, $r0, active1		#if t0active is staying on, stay here and check active0 otherwise jump to check t1active
+
+0071 : 00110001001110100000000000000011; -- 			blt $t0active, $r29, activecivilian	#if t0active is a civilian, jump to activecivilian, if its not, jump to end
+
+0072 : 00001000000000000000000001001110; -- 				j endgeneraterand
+
+0073 : 00110001011110100000000000000001; -- 		blt $t1active, $r29, activecivilian	#if active1 is a civilian, jump to active civilian, if it's not, jump to end
+
+0074 : 00001000000000000000000001001110; -- 			j endgeneraterand
+
+0075 : 00101111010000000000000000000101; -- 		addi $r29, $r0, 5	#$r29 = 5, used for blt checking if a target is a civilian
+
+0076 : 00110100001110111111111111110011; -- 		blt $rand, $r29, generaterand	#if randn is a civilian, generate a new random number
+
+0077 : 00001000000000000000000001001110; -- 			j endgeneraterand
+
+0078 : 00100111110000000000000000000000; -- 		jr $ra
+
+[0079..4095] : 00000000000000000000000000000000;
 END;

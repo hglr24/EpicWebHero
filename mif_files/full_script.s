@@ -1,9 +1,3 @@
-#To handle:	
-	# not letting two civilians be selected
-
-#assumptions
-	# the first 
-
 #initialize ie load constants
 addi $civilian1, $r0, 0		#$r10 = 0, target number of civilian 1
 addi $civilian2, $r0, 1		#$r11 = 1, target number of civilian 2
@@ -52,47 +46,45 @@ bne $bp, $r0, start
 #check score
 updatescore:
 	checkhit1:
-		bne $t1hit, $one, checkhit2	#if target 0 isnt hit, branch to check target 1
-		bne $civilian1, $t0active, villain1
-		bne $civilian2, $t0active, villain1
-		bne $civilian3, $t0active, villain1
-		bne $civilian4, $t0active, villain1
+		bne $t0hit, $one, checkhit2	#if target 0 isnt hit, branch to check target 1
+		addi $r29, $r0, 5	#$r29 = 5
+		blt $t0active, $r29, civilian1	#branching if it's a civilian
 		
-		#if havent branched yet, hit a civilian
-		sub $score, $score, $civilianscore
-		j checkhit2	#skip score for villain
-
-		villain1:
+		#if havent branched, hit a villain
 		add $score, $score, $villainscore
+		j starttarget1	#skip score for civilian
+
+		civilian1:
+		sub $score, $score, $civilianscore
 		
 		#starting a new target 1
-		addi $activetarget, $r0, 1	#setting target that will be staying active as target 1
-		jal generaterand
-		add $t0active, $r0, $rand		#set new target
-		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
-		timera $r29
+		starttarget1:
+			addi $activetarget, $r0, 1	#setting target that will be staying active as target 1
+			jal generaterand
+			add $t0active, $r0, $rand		#set new target
+			sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+			timera $r29
 		
 
 	checkhit2:
-		bne $t2hit, $one, updatetimeoffset	#if target 0 isnt hit, branch to update time offset
-		bne $civilian1, $t1active, villain2
-		bne $civilian2, $t1active, villain2
-		bne $civilian3, $t1active, villain2
-		bne $civilian4, $t1active, villain2
+		bne $t1hit, $one, updatetimeoffset	#if target 1 isnt hit, branch to update time offset
+		addi $r29, $r0, 5	#$r29 = 5
+		blt $t1active, $r29, civilian2		#branch if hit target is civilian
 		
 		#if havent branch yet, hit a civilian
-		sub $score, $score, $civilianscore
-		j timers	#skip score for villain
-
-		villain2:
 		add $score, $score, $villainscore
+		j starttarget2	#skip score for civilian
+
+		civilian2:
+		sub $score, $score, $civilianscore
 
 		#starting a new target 2
-		addi $activetarget, $r0, 0	#setting target that will be staying active as 0
-		jal generaterand
-		add $t1active, $r0, $rand		#set new target
-		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
-		timerb $r29
+		starttarget2:
+			addi $activetarget, $r0, 0	#setting target that will be staying active as 0
+			jal generaterand
+			add $t1active, $r0, $rand		#set new target
+			sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+			timerb $r29
 	
 	updatetimeoffset:
 		blt $score, $scorethreshold, timers		#branch if the score isnt greater than the threshold
@@ -100,11 +92,11 @@ updatescore:
 		add $timeoffset, $timeoffset, $one		#timeoffset++
 
 		
-timers:		#note: if change this name, it is jumped to and needs to be corrected
+timers:		
 	timer1:
-		bne $timer1, $r0, timer2	#if the timer isnt done, branch to timer b
+		bne $timer1, $r0, timer2	#if the timer isnt done, branch to timer 2
 		
-		#starting a new target 1
+		#starting a new target 0
 		addi $activetarget, $r0, 1	#setting target that is staying active as 1
 		jal generaterand
 		add $t0active, $r0, $rand		#set new target
@@ -112,13 +104,14 @@ timers:		#note: if change this name, it is jumped to and needs to be corrected
 		timera $r29
 
 	timer2:
-		bne $timer2, $r0, gameloop
+		bne $timer2, $r0, gameloop	#if timer isn't done, branch to the game loop
 		addi $activetarget, $r0, 0	#setting target to stay active as 0
 		jal generaterand
 		add $t1active, $r0, $rand		#set new target
 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 		timerb $r29
-		j gameloop
+	
+j gameloop
 
 #generates a random number [0-9]
 #checks that the generated number is not the same as the current two active targets to ensure you don't get the same target two
