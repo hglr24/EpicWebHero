@@ -1,25 +1,29 @@
 #This is a script with the purpose of testing the hardware functionality of the timer
 # it will require targets (or some visual) to be implemented for the active target register 1
 
+addi $r13 $r0 3
+addi $r14 $r0 6
+addi $r15 $r0 12
+
 #Testing timera
-addi $r10, $r0, 1	#$r10 = 1
-timera 2		#start 1 second timer
-add $r4, $r10, $r0	#setting active target 1 to be target 1
+timera $r13		#start 3 second timer
+add $r4 $r0 1		#setting active target 1 to be target 1
+nop			#allow stuff to update after timer start
 loopa:
-	blt $r6, $r10, loopa	#branch to loopa until $r6 = 0, ie timera is done
+	blt $r0, $r6, loopa	#branch to loopa until $r6 = 0, ie timera is done
 
 #Testing timerb
-addi $r10, $r0, 2	#$r10 = 2
-timerb 2		#start 1 second timer
-add $r4, $r10, $r0	#setting active target 1 to be target 2
+timerb $r14		#start 4 second timer
+nop
+add $r4 $r0 2		#setting active target 1 to be target 2
 loopb:
-	blt $r7, $r10, loopb	#branch to loopb until $r7 = 0, ie timerb is done
+	blt $r0, $r7, loopb	#branch to loopb until $r7 = 0, ie timerb is done
 
 #Testing timerc
-addi $r10, $r0, 3	#$r10 = 3
-timerb 3		#start 1 second timer
-add $r4, $r10, $r0	#setting active target 1 to be target 3
+timerc $r15		#start 12 second timer
+addi $r4 $r0 3		#setting active target 1 to be target 3
+nop
 loopc:
-	blt $r8, $r10, loopc	#branch to loopb until $r8 = 0, ie timerc is done
+	blt $r0, $r8, loopc	#branch to loopb until $r8 = 0, ie timerc is done
 
 

@@ -72,7 +72,7 @@ module processor(
 	data_readRegB,                  // I: Data from port B of regfile
 	rand_num,
 	timerstartA, timerstartB, timerstartC,
-	timerlengthA, timerlengthB, timerlengthC
+	timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, mw_inst
 	
 	// TESTING
 	/*, pc_next,
@@ -87,7 +87,7 @@ module processor(
 	alu_inA, alu_inB,
 	bypass_dw_regA, bypass_dw_regB, dmem_addr*/
 	);
-	
+	output [31:0] dx_regA_bypass, mw_inst;
 	/*output [11:0] pc_next, pc_curr;
 	output [31:0] alu_result, dmem_addr;
 	output control_stall, control_flush, bypass_xm_data, bypass_dw_regA, bypass_dw_regB;
@@ -384,8 +384,12 @@ module processor(
 	assign timerstartB = control_timerb;
 	assign timerstartC = control_timerc;
 	
-	register timerlengthregA(.w(dx_regA_bypass), .clock(clock), .clr(1'b0), .w_en(control_timera), .r(timerlengthA)); // timers reset with new lengths in execute
-	register timerlengthregB(.w(dx_regA_bypass), .clock(clock), .clr(1'b0), .w_en(control_timerb), .r(timerlengthB)); // assumes that a timer can be interrupted
-	register timerlengthregC(.w(dx_regA_bypass), .clock(clock), .clr(1'b0), .w_en(control_timerc), .r(timerlengthC));
+	//register timerlengthregA(.w(dx_regA_bypass), .clock(clock), .clr(1'b0), .w_en(control_timera), .r(timerlengthA)); // timers reset with new lengths in execute
+	//register timerlengthregB(.w(dx_regA_bypass), .clock(clock), .clr(1'b0), .w_en(control_timerb), .r(timerlengthB)); // assumes that a timer can be interrupted
+	//register timerlengthregC(.w(dx_regA_bypass), .clock(clock), .clr(1'b0), .w_en(control_timerc), .r(timerlengthC));
+	
+	assign timerlengthA = dx_regA_bypass;
+	assign timerlengthB = dx_regA_bypass;
+	assign timerlengthC = dx_regA_bypass;
 	
 endmodule

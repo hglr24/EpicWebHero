@@ -2,12 +2,13 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
 								score_digit_a, score_digit_b, score_digit_c, score_digit_d
 								
 								, ctrl_writeEnable, ctrl_writeReg, ctrl_readRegA, ctrl_readRegB, 
-								data_writeReg, data_readRegA, data_readRegB, rand_num, score);
+								data_writeReg, data_readRegA, data_readRegB, rand_num, score, timerstartA, timerstartB, timerstartC,
+								timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, timerdoneA, timerdoneB, timerdoneC, inst_mw, truelengthA, truelengthB, truelengthC);
 								
 	
-  output ctrl_writeEnable;
+  output ctrl_writeEnable, timerstartA, timerstartB, timerstartC, timerdoneA, timerdoneB, timerdoneC;
   output [4:0] ctrl_readRegA, ctrl_readRegB, ctrl_writeReg;
-  output [31:0] data_readRegA, data_readRegB, data_writeReg, score;
+  output [31:0] data_readRegA, data_readRegB, data_writeReg, score, timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, inst_mw, truelengthA, truelengthB, truelengthC;
   output [3:0] rand_num;
 	
 
@@ -36,13 +37,13 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
 	wire [3:0] rand_num;
 	random_num_gen ewh_rng(.score(score), .clock(clock), .ranNumTen(rand_num));
 	
-	wire timer_doneA, timer_doneB, timer_doneC;
+	wire timerdoneA, timerdoneB, timerdoneC;
 	wire timerstartA, timerstartB, timerstartC;
-	wire [31:0] timerlengthA, timerlengthB, timerlengthC;
+	wire [31:0] timerlengthA, timerlengthB, timerlengthC, truelengthA, truelengthB, truelengthC;
 	
-	timer ewh_timer_a(.clock(clock), .timerLength(timerlengthA), .start(timerstartA), .out(timer_doneA));
-	timer ewh_timer_b(.clock(clock), .timerLength(timerlengthB), .start(timerstartB), .out(timer_doneB));
-	timer ewh_timer_c(.clock(clock), .timerLength(timerlengthC), .start(timerstartC), .out(timer_doneC));	
+	timer ewh_timer_a(.clock(clock), .timerLength(timerlengthA), .start(timerstartA), .out(timerdoneA), .length(truelengthA));
+	timer ewh_timer_b(.clock(clock), .timerLength(timerlengthB), .start(timerstartB), .out(timerdoneB), .length(truelengthB));
+	timer ewh_timer_c(.clock(clock), .timerLength(timerlengthC), .start(timerstartC), .out(timerdoneC), .length(truelengthC));	
 	
 	/** PROCESSOR COMPONENTS BELOW **/
 	
@@ -96,9 +97,9 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
     );
 	 
 	 assign bp_write[0] = ~reset; // inverted because button, soft reset, don't need to latch because it will see it in the game loop if held for a reasonable amount of time.
-	 assign timer1_write[0] = timer_doneA;
-	 assign timer2_write[0] = timer_doneB;
-	 assign gametimer_write[0] = timer_doneC;
+	 assign timer1_write[0] = timerdoneA;
+	 assign timer2_write[0] = timerdoneB;
+	 assign gametimer_write[0] = timerdoneC;
 	 assign score = score_read;
 	 assign target_a = t1active_read[3:0];
 	 assign target_b = t2active_read[3:0];
@@ -136,7 +137,7 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
         data_readRegB,                  // I: Data from port B of regfile
 		  rand_num,
 		  timerstartA, timerstartB, timerstartC,
-		  timerlengthA, timerlengthB, timerlengthC
+		  timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, inst_mw
 	 );
 
 endmodule

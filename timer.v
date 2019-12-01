@@ -1,7 +1,8 @@
-module timer(clock, timerLength, start, out);
+module timer(clock, timerLength, start, out, length);
 input clock, start;
 input [31:0] timerLength;	//currently in seconds, only needs to be set when start is enabled
 output out;	//high while clock is active	
+output [31:0] length;
 
 reg [31:0] secondsCounter;
 reg [34:0] cyclesCounter;
