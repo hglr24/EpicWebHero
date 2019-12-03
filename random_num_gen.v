@@ -20,6 +20,9 @@ always @(posedge clock) begin
 		ranNum = (3*ranNum + rand_count) % (score);	//generating a random value
 		ranNumTen = ranNum % 10;		//mapping that random value to between 0 and 9 for target selection
 		rand_count <= rand_count + 1;
+		if(rand_count >= 32'd2147483647) begin
+			rand_count <= 32'd0;
+		end
 	//	counter <= 32'd0;
 	//end else begin
 	//	counter <= counter + 1;
