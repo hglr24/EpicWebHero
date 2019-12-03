@@ -21,12 +21,14 @@ start:
 	
 	addi $r29, $r0, 60		#$r29 = 60, number of seconds the game will last
 	timerc $r29			#starting game timer, currently 60 seconds long
-	
+
 	#starting target 1
 	jal generaterand
 	add $t0active, $r0, $rand		#set new target
 	sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 	timera $r29
+	nop
+	nop
 
 	#starting a new target 2
 	jal generaterand
@@ -34,6 +36,8 @@ start:
 	sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 	sub $r29, $r29, 2			#initial timer for target 2 is two seconds shorter so that the targets are offset
 	timerb $r29
+	nop
+	nop
 
 gameloop: 
 
@@ -64,6 +68,8 @@ updatescore:
 			add $t0active, $r0, $rand		#set new target
 			sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 			timera $r29
+			nop
+			nop
 		
 
 	checkhit2:
@@ -85,6 +91,8 @@ updatescore:
 			add $t1active, $r0, $rand		#set new target
 			sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 			timerb $r29
+			nop
+			nop
 	
 	updatetimeoffset:
 		blt $score, $scorethreshold, timers		#branch if the score isnt greater than the threshold
@@ -102,6 +110,8 @@ timers:
 		add $t0active, $r0, $rand		#set new target
 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 		timera $r29
+		nop
+		nop
 
 	timer2:
 		bne $timer2, $r0, gameloop	#if timer isn't done, branch to the game loop
@@ -110,6 +120,8 @@ timers:
 		add $t1active, $r0, $rand		#set new target
 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 		timerb $r29
+		nop
+		nop
 	
 j gameloop
 
