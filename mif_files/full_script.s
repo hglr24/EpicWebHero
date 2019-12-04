@@ -1,5 +1,4 @@
 #To Do
-	#score CANNOT be negative
 	#have to check to make sure score doesnt go too high
 
 #initialize ie load constants
