@@ -1,5 +1,5 @@
 module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_l, target_a, target_b, 
-								score_digit_a, score_digit_b, score_digit_c, score_digit_d
+								score_digit_a, score_digit_b, score_digit_c, score_digit_d, control_halt
 								
 								/*, ctrl_writeEnable, ctrl_writeReg, ctrl_readRegA, ctrl_readRegB, 
 								data_writeReg, data_readRegA, data_readRegB, rand_num, score, timerstartA, timerstartB, timerstartC,
@@ -10,7 +10,7 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
   //output [4:0] ctrl_readRegA, ctrl_readRegB, ctrl_writeReg;
   //output [31:0] data_readRegA, data_readRegB, data_writeReg, score, timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, inst_mw, truelengthA, truelengthB, truelengthC;
   //output [3:0] rand_num;
-	
+		output control_halt;
 
 	input clock, reset, flex_l, flex_r;
 	input [9:0] photo_array;
@@ -139,7 +139,7 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
         data_readRegB,                  // I: Data from port B of regfile
 		  rand_num,
 		  timerstartA, timerstartB, timerstartC,
-		  timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, inst_mw
+		  timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, inst_mw, control_halt
 	 );
 
 endmodule

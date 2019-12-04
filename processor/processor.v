@@ -72,7 +72,7 @@ module processor(
 	data_readRegB,                  // I: Data from port B of regfile
 	rand_num,
 	timerstartA, timerstartB, timerstartC,
-	timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, mw_inst
+	timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, mw_inst, control_halt
 	
 	// TESTING
 	/*, pc_next,
@@ -93,6 +93,7 @@ module processor(
 	output control_stall, control_flush, bypass_xm_data, bypass_dw_regA, bypass_dw_regB;
 	output [1:0] bypass_aluinA, bypass_dx_regB;
 	output [31:0] fd_inst, dx_inst, xm_inst, mw_inst, alu_inA, alu_inB;*/
+	output control_halt;
 
 	
 	// Control signals
@@ -170,7 +171,7 @@ module processor(
 	wire not_ctrl_md;
 	not (not_ctrl_md, control_mult || control_div);
 	
-	register pc_register(.w(pc_next), .clock(clock), .clr(reset), .w_en(stall_not && multdiv_stall_not /*not_ctrl_md*/), .r(pc_curr));
+	register pc_register(.w(pc_next), .clock(clock), .clr(reset), .w_en((stall_not && multdiv_stall_not) && ~control_halt), .r(pc_curr));
 	assign address_imem = pc_past_md_check; // changed from pc_curr
 	
 	// declare stage registers
@@ -178,8 +179,8 @@ module processor(
 	wire [31:0] fd_inst, dx_inst, xm_inst, mw_inst, dx_regA, dx_regB, mw_data_out, dmem_addr, fd_inst_post_stall;
 	wire [11:0] fd_pc_next, dx_pc_next, xm_pc_next, mw_pc_next, mw_addr_out;
 	
-	stage_register fd_register(.w1(pc_past_md_check), .w4(orig_inst_post_stall), .clock(clock), .clr(reset), .w_en(stall_not && multdiv_stall_not), .r1(fd_pc_next), .r4(fd_inst));
-	stage_register dx_register(.w1(fd_pc_next), .w2(fd_regA_out), .w3(fd_regB_out), .w4(fd_inst_post_stall), .clock(clock), .clr(reset), .w_en(multdiv_stall_not), .r1(dx_pc_next), .r2(dx_regA), .r3(dx_regB), .r4(dx_inst));
+	stage_register fd_register(.w1(pc_past_md_check), .w4(orig_inst_post_stall), .clock(clock), .clr(reset), .w_en((stall_not && multdiv_stall_not) && ~control_halt), .r1(fd_pc_next), .r4(fd_inst));
+	stage_register dx_register(.w1(fd_pc_next), .w2(fd_regA_out), .w3(fd_regB_out), .w4(fd_inst_post_stall), .clock(clock), .clr(reset), .w_en(multdiv_stall_not && ~control_halt), .r1(dx_pc_next), .r2(dx_regA), .r3(dx_regB), .r4(dx_inst));
 	stage_register xm_register(.w1(dx_pc_next), .w2(arith_or_ex_or_rand), .w3(dx_regB_bypass), .w4(dx_inst_post_ex), .clock(clock), .clr(reset), .w_en(multdiv_stall_not), .r1(xm_pc_next), .r2(dmem_addr), .r3(data_pre_bp_mux), .r4(xm_inst));
 	stage_register mw_register(.w1(xm_pc_next), .w2(dmem_addr), .w3(q_dmem), .w4(xm_inst), .clock(clock), .clr(reset), .w_en(multdiv_stall_not), .r1(mw_pc_next), .r2(mw_addr_out_long), .r3(mw_data_out), .r4(mw_inst));
 	
@@ -260,14 +261,14 @@ module processor(
 		control_storew, control_jump, control_j_jal, control_set_ex, control_branch_ex, control_branch_lessthn_fd;
 		
 	wire control_read_from_rd, control_j_jal_mw, control_not_rtype, control_mult, control_div, control_setx_mw, control_setx, control_bex, control_bex_fd,
-		control_rand, control_timera, control_timerb, control_timerc, control_timera_fd, control_timerb_fd, control_timerc_fd;
+		control_rand, control_timera, control_timerb, control_timerc, control_timera_fd, control_timerb_fd, control_timerc_fd, control_halt;
 	
 	// declare instruction decoders/control modules for each stage
 	// MAKE SURE CONTROL SIGNALS ARE BEING ACCESSED AT CORRECT STAGES!!!!
 	
 	inst_decoder dec_fd(.inst(fd_inst), .control_read_from_rd(control_read_from_rd), .control_branch_lessthn(control_branch_lessthn_fd),
 		.control_j_jal(control_j_jal_fd), .control_storew(control_storew_fd), .control_branch_ex(control_bex_fd), .control_set_ex(control_setx_fd),
-		.control_timera(control_timera_fd), .control_timerb(control_timerb_fd), .control_timerc(control_timerc_fd));
+		.control_timera(control_timera_fd), .control_timerb(control_timerb_fd), .control_timerc(control_timerc_fd), .control_halt(control_halt));
 	
 	inst_decoder dec_dx(.inst(dx_inst), .control_branch_neq(control_branch_neq), .control_branch_lessthn(control_branch_lessthn),
 		.control_use_imm(control_use_imm), .control_jump(control_jump), .control_j_jal(control_j_jal), .control_not_rtype(control_not_rtype),
@@ -355,7 +356,7 @@ module processor(
 	
 	wire [11:0] pc_old, pc_past_md_check;
 	register old_pc_reg(.w(pc_past_md_check), .clr(reset), .clock(clock), .w_en(1'b1), .r(pc_old));
-	mux_2 curr_pc_muxx(.in1(pc_curr), .in2(pc_old), .select(control_mult || control_div || control_stall), .out(pc_past_md_check)); //changed to include stall
+	mux_2 curr_pc_muxx(.in1(pc_curr), .in2(pc_old), .select(control_mult || control_div || control_stall || control_halt), .out(pc_past_md_check)); //changed to include stall
 	
 	// declare exception checker
 	

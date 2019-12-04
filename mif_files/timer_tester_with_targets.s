@@ -30,3 +30,12 @@ bne $gametimer, $one, next3
 
 next3:			# Target 9 becomes active at end after 3 secs
 addi $t0active, $r0, 9
+addi $r29, $r0, 5
+timerc $r29
+nop
+nop
+loop4:
+bne $gametimer, $one, end
+	j loop4
+end:
+halt 0

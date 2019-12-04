@@ -1,11 +1,11 @@
 module inst_decoder(inst, control_branch_neq, control_branch_lessthn, control_write_en, control_use_imm, control_data_select,
 	control_storew, control_jump, control_j_jal, control_set_ex, control_branch_ex, control_read_from_rd, control_not_rtype,
-	control_mult, control_div, control_rand, control_timera, control_timerb, control_timerc);
+	control_mult, control_div, control_rand, control_timera, control_timerb, control_timerc, control_halt);
 
 	input [31:0] inst;
 	output control_branch_neq, control_branch_lessthn, control_write_en, control_use_imm, control_data_select,
 		control_storew, control_jump, control_j_jal, control_set_ex, control_branch_ex, control_read_from_rd, control_not_rtype,
-		control_mult, control_div, control_rand, control_timera, control_timerb, control_timerc;
+		control_mult, control_div, control_rand, control_timera, control_timerb, control_timerc, control_halt;
 	
 	wire [4:0] opcode;
 	assign opcode = inst[31:27];
@@ -72,5 +72,6 @@ module inst_decoder(inst, control_branch_neq, control_branch_lessthn, control_wr
 	assign control_timera = dec_out[24] && not_nop; // timera
 	assign control_timerb = dec_out[25] && not_nop; // timerb
 	assign control_timerc = dec_out[26] && not_nop; // timerc
+	assign control_halt = dec_out[31]; // halt
 	
 endmodule
