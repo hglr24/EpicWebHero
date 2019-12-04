@@ -1,3 +1,7 @@
+#To Do
+	#score CANNOT be negative
+	#have to check to make sure score doesnt go too high
+
 #initialize ie load constants
 addi $civilian1, $r0, 0		#$r10 = 0, target number of civilian 1
 addi $civilian2, $r0, 1		#$r11 = 1, target number of civilian 2
@@ -59,6 +63,7 @@ updatescore:
 		j starttarget1	#skip score for civilian
 
 		civilian1:
+		blt $score, $civilianscore, starttarget1	#if the score is less than what a civilian score would cost, branches to avoid -score
 		sub $score, $score, $civilianscore
 		
 		#starting a new target 1
@@ -82,6 +87,7 @@ updatescore:
 		j starttarget2	#skip score for civilian
 
 		civilian2:
+		blt $score, $civilianscore, starttarget2	#if the score is less than what a civilian score would cost, branches to avoid -score
 		sub $score, $score, $civilianscore
 
 		#starting a new target 2
