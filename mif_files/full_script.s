@@ -22,7 +22,7 @@ start:
 	add $score, $r0, $r0		#$score = 0
 	add $timeoffset, $r0, $r0	#$timeroffset = 0, this is subtracted from the base time for how long targets stay active
 	
-	addi $r29, $r0, 60		#$r29 = 60, number of seconds the game will last
+	addi $r29, $r0, 120		#$r29 = 120, number of seconds the game will last
 	timerc $r29			#starting game timer, currently 60 seconds long
 
 	#starting target 1
@@ -54,7 +54,7 @@ bne $bp, $r0, start
 updatescore:
 	checkhit1:
 		bne $t0hit, $one, checkhit2	#if target 0 isnt hit, branch to check target 1
-		addi $r29, $r0, 5	#$r29 = 5
+		addi $r29, $r0, 4	#$r29 = 4
 		blt $t0active, $r29, civilian1	#branching if it's a civilian
 		
 		#if havent branched, hit a villain
@@ -78,7 +78,7 @@ updatescore:
 
 	checkhit2:
 		bne $t1hit, $one, updatetimeoffset	#if target 1 isnt hit, branch to update time offset
-		addi $r29, $r0, 5	#$r29 = 5
+		addi $r29, $r0, 4	#$r29 = 4
 		blt $t1active, $r29, civilian2		#branch if hit target is civilian
 		
 		#if havent branch yet, hit a civilian
@@ -148,7 +148,7 @@ generaterand:
 	
 	#checking if the active that isnt being replaced is a civilian and, if it is, making sure the generated random number isnt a civilian too
 	checkingcivilians:
-	addi $r29, $r0, 5	#$r29 = 5, used for blt checking if a target is a civilian
+	addi $r29, $r0, 4	#$r29 = 4, used for blt checking if a target is a civilian
 	#checking if active0 is staying on and if it's a civilian
 	active0:
 		bne $activetarget, $r0, active1		#if t0active is staying on, stay here and check active0 otherwise jump to check t1active
@@ -161,7 +161,7 @@ generaterand:
 
 	#if active is a civilian (jump from previous branches), then checking of randn is a civilian
 	activecivilian:
-		addi $r29, $r0, 5	#$r29 = 5, used for blt checking if a target is a civilian
+		addi $r29, $r0, 4	#$r29 = 4, used for blt checking if a target is a civilian
 		blt $rand, $r29, generaterand	#if randn is a civilian, generate a new random number
 			j endgeneraterand
 

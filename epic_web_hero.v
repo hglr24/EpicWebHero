@@ -1,16 +1,15 @@
 module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_l, target_a, target_b, 
-								score_digit_a, score_digit_b, score_digit_c, score_digit_d, control_halt
+								score_digit_a, score_digit_b, score_digit_c, score_digit_d, control_halt, t1hit_write, target_a_old
 								
-								/*, ctrl_writeEnable, ctrl_writeReg, ctrl_readRegA, ctrl_readRegB, 
-								data_writeReg, data_readRegA, data_readRegB, rand_num, score, timerstartA, timerstartB, timerstartC,
-								timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, timerdoneA, timerdoneB, timerdoneC, inst_mw, truelengthA, truelengthB, truelengthC*/);
+								, ctrl_writeEnable, ctrl_writeReg, data_writeReg, inst_mw);
 								
 	
-  //output ctrl_writeEnable, timerstartA, timerstartB, timerstartC, timerdoneA, timerdoneB, timerdoneC;
-  //output [4:0] ctrl_readRegA, ctrl_readRegB, ctrl_writeReg;
-  //output [31:0] data_readRegA, data_readRegB, data_writeReg, score, timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, inst_mw, truelengthA, truelengthB, truelengthC;
-  //output [3:0] rand_num;
+  output ctrl_writeEnable;
+  output [4:0] ctrl_writeReg;
+  output [31:0] data_writeReg;
 		output control_halt;
+		output [31:0] t1hit_write, inst_mw;
+		output [3:0] target_a_old;
 
 	input clock, reset, flex_l, flex_r;
 	input [9:0] photo_array;
@@ -106,12 +105,8 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
 	 assign target_a = t1active_read[3:0];
 	 assign target_b = t2active_read[3:0];
 	 
-	 wire [3:0] target_a_old, target_b_old;
-	 register target_a_reg(.w(target_a), .clock(clock), .clr(1'b0), .w_en(1'b1), .r(target_a_old));
-	 register target_b_reg(.w(target_b), .clock(clock), .clr(1'b0), .w_en(1'b1), .r(target_b_old));
-	 
-	 sr_latch ta_sr(.r(target_a != target_a_old), .s(photo_array[target_a]), .q(t1hit_write[0])); // latch these until target_a, target_b change
-	 sr_latch tb_sr(.r(target_b != target_b_old), .s(photo_array[target_b]), .q(t2hit_write[0]));
+	 hit_checker ta_checker(.clock(clock), .target_active(target_a), .photo_array(photo_array), .active_is_hit(t1hit_write[0]));
+	 hit_checker tb_checker(.clock(clock), .target_active(target_b), .photo_array(photo_array), .active_is_hit(t2hit_write[0]));
 
     /** PROCESSOR **/
     processor my_processor(

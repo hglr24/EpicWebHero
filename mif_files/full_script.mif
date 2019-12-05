@@ -30,7 +30,7 @@ BEGIN
 
 0012 : 00000100110000000000000000000000; -- 	add $timeoffset, $r0, $r0	#$timeroffset = 0, this is subtracted from the base time for how long targets stay active
 
-0013 : 00101111010000000000000000111100; -- 	addi $r29, $r0, 60		#$r29 = 60, number of seconds the game will last
+0013 : 00101111010000000000000001111000; -- 	addi $r29, $r0, 120		#$r29 = 120, number of seconds the game will last
 
 0014 : 11010111010000000000000000000000; -- 	timerc $r29			#starting game timer, currently 60 seconds long
 
@@ -66,7 +66,7 @@ BEGIN
 
 0030 : 00010000100111100000000000001101; -- 		bne $t0hit, $one, checkhit2	#if target 0 isnt hit, branch to check target 1
 
-0031 : 00101111010000000000000000000101; -- 		addi $r29, $r0, 5	#$r29 = 5
+0031 : 00101111010000000000000000000100; -- 		addi $r29, $r0, 4	#$r29 = 4
 
 0032 : 00110001001110100000000000000010; -- 		blt $t0active, $r29, civilian1	#branching if it's a civilian
 
@@ -94,7 +94,7 @@ BEGIN
 
 0044 : 00010000110111100000000000001101; -- 		bne $t1hit, $one, updatetimeoffset	#if target 1 isnt hit, branch to update time offset
 
-0045 : 00101111010000000000000000000101; -- 		addi $r29, $r0, 5	#$r29 = 5
+0045 : 00101111010000000000000000000100; -- 		addi $r29, $r0, 4	#$r29 = 4
 
 0046 : 00110001011110100000000000000010; -- 		blt $t1active, $r29, civilian2		#branch if hit target is civilian
 
@@ -170,7 +170,7 @@ BEGIN
 
 0082 : 00001000000000000000000001001110; -- 		j generaterand
 
-0083 : 00101111010000000000000000000101; -- 	addi $r29, $r0, 5	#$r29 = 5, used for blt checking if a target is a civilian
+0083 : 00101111010000000000000000000100; -- 	addi $r29, $r0, 4	#$r29 = 4, used for blt checking if a target is a civilian
 
 0084 : 00010101100000000000000000000010; -- 		bne $activetarget, $r0, active1		#if t0active is staying on, stay here and check active0 otherwise jump to check t1active
 
@@ -182,7 +182,7 @@ BEGIN
 
 0088 : 00001000000000000000000001011100; -- 			j endgeneraterand
 
-0089 : 00101111010000000000000000000101; -- 		addi $r29, $r0, 5	#$r29 = 5, used for blt checking if a target is a civilian
+0089 : 00101111010000000000000000000100; -- 		addi $r29, $r0, 4	#$r29 = 4, used for blt checking if a target is a civilian
 
 0090 : 00110100001110111111111111110011; -- 		blt $rand, $r29, generaterand	#if randn is a civilian, generate a new random number
 
