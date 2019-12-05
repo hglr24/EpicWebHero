@@ -33,16 +33,6 @@ HEADER
 	GRID_DUTY_CYCLE = 50;
 }
 
-SIGNAL("clk")
-{
-	VALUE_TYPE = NINE_LEVEL_BIT;
-	SIGNAL_TYPE = SINGLE_BIT;
-	WIDTH = 1;
-	LSB_INDEX = -1;
-	DIRECTION = INPUT;
-	PARENT = "";
-}
-
 SIGNAL("ranNum")
 {
 	VALUE_TYPE = NINE_LEVEL_BIT;
@@ -1363,18 +1353,14 @@ SIGNAL("score[0]")
 	PARENT = "score";
 }
 
-TRANSITION_LIST("clk")
+SIGNAL("clock")
 {
-	NODE
-	{
-		REPEAT = 1;
-		NODE
-		{
-			REPEAT = 50;
-			LEVEL 0 FOR 10.0;
-			LEVEL 1 FOR 10.0;
-		}
-	}
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = INPUT;
+	PARENT = "";
 }
 
 TRANSITION_LIST("ranNum[31]")
@@ -2583,9 +2569,23 @@ TRANSITION_LIST("score[0]")
 	}
 }
 
+TRANSITION_LIST("clock")
+{
+	NODE
+	{
+		REPEAT = 1;
+		NODE
+		{
+			REPEAT = 50;
+			LEVEL 0 FOR 10.0;
+			LEVEL 1 FOR 10.0;
+		}
+	}
+}
+
 DISPLAY_LINE
 {
-	CHANNEL = "clk";
+	CHANNEL = "clock";
 	EXPAND_STATUS = COLLAPSED;
 	RADIX = Binary;
 	TREE_INDEX = 0;
