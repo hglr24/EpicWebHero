@@ -38,6 +38,8 @@ start:
 	add $t1active, $r0, $rand		#set new target
 	sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 	sub $r29, $r29, 2			#initial timer for target 2 is two seconds shorter so that the targets are offset
+	nop
+	nop
 	timerb $r29
 	nop
 	nop
