@@ -1,22 +1,24 @@
 module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_l, target_a, target_b, 
-								score_digit_a, score_digit_b, score_digit_c, score_digit_d
+								score_digit_a, score_digit_b, score_digit_c, score_digit_d, control_halt
 								
-								, ctrl_writeEnable, ctrl_writeReg, ctrl_readRegA, ctrl_readRegB, 
+								/*, ctrl_writeEnable, ctrl_writeReg, ctrl_readRegA, ctrl_readRegB, 
 								data_writeReg, data_readRegA, data_readRegB, rand_num, score, timerstartA, timerstartB, timerstartC,
-								timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, timerdoneA, timerdoneB, timerdoneC, inst_mw, truelengthA, truelengthB, truelengthC);
+								timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, timerdoneA, timerdoneB, timerdoneC, inst_mw, truelengthA, truelengthB, truelengthC*/);
 								
 	
-  output ctrl_writeEnable, timerstartA, timerstartB, timerstartC, timerdoneA, timerdoneB, timerdoneC;
-  output [4:0] ctrl_readRegA, ctrl_readRegB, ctrl_writeReg;
-  output [31:0] data_readRegA, data_readRegB, data_writeReg, score, timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, inst_mw, truelengthA, truelengthB, truelengthC;
-  output [3:0] rand_num;
-	
+  //output ctrl_writeEnable, timerstartA, timerstartB, timerstartC, timerdoneA, timerdoneB, timerdoneC;
+  //output [4:0] ctrl_readRegA, ctrl_readRegB, ctrl_writeReg;
+  //output [31:0] data_readRegA, data_readRegB, data_writeReg, score, timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, inst_mw, truelengthA, truelengthB, truelengthC;
+  //output [3:0] rand_num;
+		output control_halt;
 
 	input clock, reset, flex_l, flex_r;
 	input [9:0] photo_array;
 	
 	output laser_r, laser_l;
-	output [3:0] target_a, target_b;
+	
+	output [3:0] target_a, target_b;	
+	
 	output [6:0] score_digit_a, score_digit_b, score_digit_c, score_digit_d;
 	
 	wire [31:0] score; // current game score
@@ -84,7 +86,7 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
     regfile my_regfile(
         ~clock, // CHANGED
         ctrl_writeEnable,
-        reset, // reset
+        1'b0, // reset
         ctrl_writeReg,
         ctrl_readRegA,
         ctrl_readRegB,
@@ -115,7 +117,7 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
     processor my_processor(
         // Control signals
         clock,                          // I: The master clock
-        reset,                          // I: A reset signal
+        1'b0,                           // I: A reset signal
 
         // Imem
         address_imem,                   // O: The address of the data to get from imem
@@ -137,7 +139,7 @@ module epic_web_hero (clock, reset, photo_array, flex_r, flex_l, laser_r, laser_
         data_readRegB,                  // I: Data from port B of regfile
 		  rand_num,
 		  timerstartA, timerstartB, timerstartC,
-		  timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, inst_mw
+		  timerlengthA, timerlengthB, timerlengthC, dx_regA_bypass, inst_mw, control_halt
 	 );
 
 endmodule

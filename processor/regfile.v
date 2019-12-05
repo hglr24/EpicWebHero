@@ -20,6 +20,7 @@ module regfile(
 
 	reg[31:0] registers[31:0];
 	
+	
 	always @(posedge clock)
 	begin
 			if(ctrl_writeEnable && ctrl_writeReg != 5'd0 && ctrl_writeReg != 5'd1 && ctrl_writeReg != 5'd2 && ctrl_writeReg != 5'd3
@@ -29,6 +30,7 @@ module regfile(
 		registers[1] <= bp_write;
 		registers[2] <= t1hit_write;
 		registers[3] <= t2hit_write;
+		
 		registers[6] <= timer1_write;
 		registers[7] <= timer2_write;
 		registers[8] <= gametimer_write;

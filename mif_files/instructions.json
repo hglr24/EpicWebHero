@@ -2,5 +2,6 @@
 "timera": {"type": "JII", "opcode": "11000", "syntax": ["rd"]},
 "timerb": {"type": "JII", "opcode": "11001", "syntax": ["rd"]},
 "timerc": {"type": "JII", "opcode": "11010", "syntax": ["rd"]},
-"randn": {"type": "JII", "opcode": "11011", "syntax": ["rd"]}
+"randn": {"type": "JII", "opcode": "11011", "syntax": ["rd"]},
+"halt": {"type": "JI", "opcode": "11111", "syntax": ["T"]}
  }
