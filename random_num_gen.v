@@ -21,9 +21,6 @@ always @(posedge clock) begin
 		if(rand_count >= 32'd2000000) begin
 			rand_count <= 32'd0;
 		end
-		if (ranNumTen < 32'd0 || ranNumTen > 32'd9) begin
-			ranNumTen[3] <= 1'b0;
-		end
 end
 
 endmodule

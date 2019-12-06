@@ -9,8 +9,8 @@ addi $civilian4, $r0, 3		#$r21 = 3, target number of civilian 4
 addi $civilianscore, $r0, 100	#$r13 = 100, score to be subtracted if civilian hit
 addi $villainscore, $r0, 200	#$r14 = 200, score to be added if villain hit
 addi $one, $r0, 1		#$r15 = 1, often need to compare a reg to number 1
-addi $scoreincrement, $r0, 1000	#$r18 = 500, every time the score threshold is met, it is incremented by 500
-addi $timermax, $r0, 5		#$r20 = 5, number of seconds targets are on with a score of 0
+addi $scoreincrement, $r0, 500	#$r18 = 500, every time the score threshold is met, it is incremented by 500
+addi $timermax, $r0, 10		#$r20 = 10, number of seconds targets are on with a score of 0
 
 #waiting for button to be pressed for initial start
 waitButton:
@@ -37,8 +37,9 @@ start:
 	jal generaterand
 	add $t1active, $r0, $rand		#set new target
 	sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
-	addi $r28, $r20, 2
-	sub $r29, $r29, $r28			#initial timer for target 2 is two seconds shorter so that the targets are offset
+	sub $r29, $r29, 2			#initial timer for target 2 is two seconds shorter so that the targets are offset
+	nop
+	nop
 	timerb $r29
 	nop
 	nop
@@ -101,18 +102,10 @@ updatescore:
 			nop
 	
 	updatetimeoffset:
-		addi $r29, $r0, 4
-		blt $score, $scorethreshold, scorecheck		#branch if the score isnt greater than the threshold
+		blt $score, $scorethreshold, timers		#branch if the score isnt greater than the threshold
 		add $scorethreshold, $scorethreshold, $scoreincrement	#scorethreshold = scorethreshold + increment
 		add $timeoffset, $timeoffset, $one		#timeoffset++
-		bne $timeoffset, $r29, scorecheck		#if time offset doesnt equal 4, branch
-		addi $timeoffset, $r0, 2		#if didn't branch, time offset hit 4 and we don't want it to exceed 3
 
-	scorecheck:
-		addi $r29, $r0, 9950
-		blt $score, $r29, timers	#if score isnt over threshold, jump
-		addi $score, $r0, 9999	#set score to max
-		j waitButton
 		
 timers:		
 	timer1:
@@ -146,11 +139,6 @@ j gameloop
 #IMPORTANT: before calling this function, set $activetarget to be 0 or 1 dependending on which active target register is going to be remaining active (ie 	#not replaced by this new random number - this is used for the no two civilians bit
 generaterand:
 	randn $rand
-nop
-nop
-nop
-nop
-nop #see if it's a  bypass thing
 	
 	#checking if the generated number is the same as the current active targets
 	equalactive0:
@@ -181,5 +169,3 @@ nop #see if it's a  bypass thing
 
 	endgeneraterand:
 		jr $ra
-
-	
