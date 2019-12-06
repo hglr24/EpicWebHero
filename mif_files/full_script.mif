@@ -34,7 +34,7 @@ BEGIN
 
 0014 : 11010111010000000000000000000000; -- 	timerc $r29			#starting game timer, currently 60 seconds long
 
-0015 : 00011000000000000000000001010000; -- 	jal generaterand
+0015 : 00011000000000000000000001001111; -- 	jal generaterand
 
 0016 : 00000001000000010000000000000000; -- 	add $t0active, $r0, $rand		#set new target
 
@@ -46,126 +46,127 @@ BEGIN
 
 0020 : 00000000000000000000000000000000; -- 	nop
 
-0021 : 00011000000000000000000001010000; -- 	jal generaterand
+0021 : 00011000000000000000000001001111; -- 	jal generaterand
 
 0022 : 00000001010000010000000000000000; -- 	add $t1active, $r0, $rand		#set new target
 
 0023 : 00000111011010010011000000000100; -- 	sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 
-0024 : 00000111011110100010000000000100; -- 	sub $r29, $r29, 2			#initial timer for target 2 is two seconds shorter so that the targets are offset
+0024 : 00101111001010000000000000000010; -- 	addi $r28, $r20, 2
 
-0025 : 00000000000000000000000000000000; -- 	nop
+0025 : 00000111011110111100000000000100; -- 	sub $r29, $r29, $r28			#initial timer for target 2 is two seconds shorter so that the targets are offset
 
-0026 : 00000000000000000000000000000000; -- 	nop
+0026 : 11001111010000000000000000000000; -- 	timerb $r29
 
-0027 : 11001111010000000000000000000000; -- 	timerb $r29
+0027 : 00000000000000000000000000000000; -- 	nop
 
 0028 : 00000000000000000000000000000000; -- 	nop
 
-0029 : 00000000000000000000000000000000; -- 	nop
+0029 : 00010010000111111111111111101011; -- bne $gametimer, $one, waitButton
 
-0030 : 00010010000111111111111111101010; -- bne $gametimer, $one, waitButton
+0030 : 00010000010000011111111111101011; -- bne $bp, $r0, start
 
-0031 : 00010000010000011111111111101010; -- bne $bp, $r0, start
+0031 : 00010000100111100000000000001101; -- 		bne $t0hit, $one, checkhit2	#if target 0 isnt hit, branch to check target 1
 
-0032 : 00010000100111100000000000001101; -- 		bne $t0hit, $one, checkhit2	#if target 0 isnt hit, branch to check target 1
+0032 : 00101111010000000000000000000100; -- 		addi $r29, $r0, 4	#$r29 = 4
 
-0033 : 00101111010000000000000000000100; -- 		addi $r29, $r0, 4	#$r29 = 4
+0033 : 00110001001110100000000000000010; -- 		blt $t0active, $r29, civilian1	#branching if it's a civilian
 
-0034 : 00110001001110100000000000000010; -- 		blt $t0active, $r29, civilian1	#branching if it's a civilian
+0034 : 00000010010100101110000000000000; -- 		add $score, $score, $villainscore
 
-0035 : 00000010010100101110000000000000; -- 		add $score, $score, $villainscore
+0035 : 00001000000000000000000000100110; -- 		j starttarget1	#skip score for civilian
 
-0036 : 00001000000000000000000000100111; -- 		j starttarget1	#skip score for civilian
+0036 : 00110010010110100000000000000001; -- 		blt $score, $civilianscore, starttarget1	#if the score is less than what a civilian score would cost, branches to avoid -score
 
-0037 : 00110010010110100000000000000001; -- 		blt $score, $civilianscore, starttarget1	#if the score is less than what a civilian score would cost, branches to avoid -score
+0037 : 00000010010100101101000000000100; -- 		sub $score, $score, $civilianscore
 
-0038 : 00000010010100101101000000000100; -- 		sub $score, $score, $civilianscore
+0038 : 00101101100000000000000000000001; -- 			addi $activetarget, $r0, 1	#setting target that will be staying active as target 1
 
-0039 : 00101101100000000000000000000001; -- 			addi $activetarget, $r0, 1	#setting target that will be staying active as target 1
+0039 : 00011000000000000000000001001111; -- 			jal generaterand
 
-0040 : 00011000000000000000000001010000; -- 			jal generaterand
+0040 : 00000001000000010000000000000000; -- 			add $t0active, $r0, $rand		#set new target
 
-0041 : 00000001000000010000000000000000; -- 			add $t0active, $r0, $rand		#set new target
+0041 : 00000111011010010011000000000100; -- 			sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 
-0042 : 00000111011010010011000000000100; -- 			sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+0042 : 11000111010000000000000000000000; -- 			timera $r29
 
-0043 : 11000111010000000000000000000000; -- 			timera $r29
+0043 : 00000000000000000000000000000000; -- 			nop
 
 0044 : 00000000000000000000000000000000; -- 			nop
 
-0045 : 00000000000000000000000000000000; -- 			nop
+0045 : 00010000110111100000000000001101; -- 		bne $t1hit, $one, updatetimeoffset	#if target 1 isnt hit, branch to update time offset
 
-0046 : 00010000110111100000000000001101; -- 		bne $t1hit, $one, updatetimeoffset	#if target 1 isnt hit, branch to update time offset
+0046 : 00101111010000000000000000000100; -- 		addi $r29, $r0, 4	#$r29 = 4
 
-0047 : 00101111010000000000000000000100; -- 		addi $r29, $r0, 4	#$r29 = 4
+0047 : 00110001011110100000000000000010; -- 		blt $t1active, $r29, civilian2		#branch if hit target is civilian
 
-0048 : 00110001011110100000000000000010; -- 		blt $t1active, $r29, civilian2		#branch if hit target is civilian
+0048 : 00000010010100101110000000000000; -- 		add $score, $score, $villainscore
 
-0049 : 00000010010100101110000000000000; -- 		add $score, $score, $villainscore
+0049 : 00001000000000000000000000110100; -- 		j starttarget2	#skip score for civilian
 
-0050 : 00001000000000000000000000110101; -- 		j starttarget2	#skip score for civilian
+0050 : 00110010010110100000000000000001; -- 		blt $score, $civilianscore, starttarget2	#if the score is less than what a civilian score would cost, branches to avoid -score
 
-0051 : 00110010010110100000000000000001; -- 		blt $score, $civilianscore, starttarget2	#if the score is less than what a civilian score would cost, branches to avoid -score
+0051 : 00000010010100101101000000000100; -- 		sub $score, $score, $civilianscore
 
-0052 : 00000010010100101101000000000100; -- 		sub $score, $score, $civilianscore
+0052 : 00101101100000000000000000000000; -- 			addi $activetarget, $r0, 0	#setting target that will be staying active as 0
 
-0053 : 00101101100000000000000000000000; -- 			addi $activetarget, $r0, 0	#setting target that will be staying active as 0
+0053 : 00011000000000000000000001001111; -- 			jal generaterand
 
-0054 : 00011000000000000000000001010000; -- 			jal generaterand
+0054 : 00000001010000010000000000000000; -- 			add $t1active, $r0, $rand		#set new target
 
-0055 : 00000001010000010000000000000000; -- 			add $t1active, $r0, $rand		#set new target
+0055 : 00000111011010010011000000000100; -- 			sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 
-0056 : 00000111011010010011000000000100; -- 			sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+0056 : 11001111010000000000000000000000; -- 			timerb $r29
 
-0057 : 11001111010000000000000000000000; -- 			timerb $r29
+0057 : 00000000000000000000000000000000; -- 			nop
 
 0058 : 00000000000000000000000000000000; -- 			nop
 
-0059 : 00000000000000000000000000000000; -- 			nop
+0059 : 00110010011000100000000000000010; -- 		blt $score, $scorethreshold, timers		#branch if the score isnt greater than the threshold
 
-0060 : 00110010011000100000000000000010; -- 		blt $score, $scorethreshold, timers		#branch if the score isnt greater than the threshold
+0060 : 00000100011000110010000000000000; -- 		add $scorethreshold, $scorethreshold, $scoreincrement	#scorethreshold = scorethreshold + increment
 
-0061 : 00000100011000110010000000000000; -- 		add $scorethreshold, $scorethreshold, $scoreincrement	#scorethreshold = scorethreshold + increment
+0061 : 00000100111001101111000000000000; -- 		add $timeoffset, $timeoffset, $one		#timeoffset++
 
-0062 : 00000100111001101111000000000000; -- 		add $timeoffset, $timeoffset, $one		#timeoffset++
+0062 : 00010001100000000000000000000111; -- 		bne $timer1, $r0, timer2	#if the timer isnt done, branch to timer 2
 
-0063 : 00010001100000000000000000000111; -- 		bne $timer1, $r0, timer2	#if the timer isnt done, branch to timer 2
+0063 : 00101101100000000000000000000001; -- 		addi $activetarget, $r0, 1	#setting target that is staying active as 1
 
-0064 : 00101101100000000000000000000001; -- 		addi $activetarget, $r0, 1	#setting target that is staying active as 1
+0064 : 00011000000000000000000001001111; -- 		jal generaterand
 
-0065 : 00011000000000000000000001010000; -- 		jal generaterand
+0065 : 00000001000000010000000000000000; -- 		add $t0active, $r0, $rand		#set new target
 
-0066 : 00000001000000010000000000000000; -- 		add $t0active, $r0, $rand		#set new target
+0066 : 00000111011010010011000000000100; -- 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 
-0067 : 00000111011010010011000000000100; -- 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+0067 : 11000111010000000000000000000000; -- 		timera $r29
 
-0068 : 11000111010000000000000000000000; -- 		timera $r29
+0068 : 00000000000000000000000000000000; -- 		nop
 
 0069 : 00000000000000000000000000000000; -- 		nop
 
-0070 : 00000000000000000000000000000000; -- 		nop
+0070 : 00010001110000011111111111010110; -- 		bne $timer2, $r0, gameloop	#if timer isn't done, branch to the game loop
 
-0071 : 00010001110000011111111111010110; -- 		bne $timer2, $r0, gameloop	#if timer isn't done, branch to the game loop
+0071 : 00101101100000000000000000000000; -- 		addi $activetarget, $r0, 0	#setting target to stay active as 0
 
-0072 : 00101101100000000000000000000000; -- 		addi $activetarget, $r0, 0	#setting target to stay active as 0
+0072 : 00011000000000000000000001001111; -- 		jal generaterand
 
-0073 : 00011000000000000000000001010000; -- 		jal generaterand
+0073 : 00000001010000010000000000000000; -- 		add $t1active, $r0, $rand		#set new target
 
-0074 : 00000001010000010000000000000000; -- 		add $t1active, $r0, $rand		#set new target
+0074 : 00000111011010010011000000000100; -- 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
 
-0075 : 00000111011010010011000000000100; -- 		sub $r29, $timermax, $timeoffset	#calculating how long the target should be active for
+0075 : 11001111010000000000000000000000; -- 		timerb $r29
 
-0076 : 11001111010000000000000000000000; -- 		timerb $r29
+0076 : 00000000000000000000000000000000; -- 		nop
 
 0077 : 00000000000000000000000000000000; -- 		nop
 
-0078 : 00000000000000000000000000000000; -- 		nop
+0078 : 00001000000000000000000000011101; -- j gameloop
 
-0079 : 00001000000000000000000000011110; -- j gameloop
+0079 : 11011100000000000000000000000000; -- 	randn $rand
 
-0080 : 11011100000000000000000000000000; -- 	randn $rand
+0080 : 00010100000010000000000000000001; -- 		bne $rand, $t0active, equalactive1	#if same as active target 1, generate new random number
 
+<<<<<<< HEAD
 0081 : 00000000000000000000000000000000; -- nop
 
 0082 : 00000000000000000000000000000000; -- nop
@@ -205,4 +206,5 @@ BEGIN
 0099 : 00100111110000000000000000000000; -- 		jr $ra
 
 [0100..4095] : 00000000000000000000000000000000;
+
 END;
