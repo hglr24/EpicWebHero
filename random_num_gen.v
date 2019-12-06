@@ -1,22 +1,19 @@
 module random_num_gen(score, clock, ranNumTen);
 input clock;
-input [31:0] score;//, currentTime;
-output [31:0] ranNumTen;
+input [31:0] score;
+output [3:0] ranNumTen;
 
 reg [31:0] ranNum;
 reg [31:0] ranNumTen;
-//reg [31:0] counter;
 reg [31:0] rand_count;
 
 initial begin
 		ranNum <= 4'd2;
-	//	counter <= 32'd0;
 		rand_count <= 32'd0;
 		ranNumTen <= 32'd0;
 end
 
 always @(posedge clock) begin
-	//if (counter >= 25000000) begin
 		//pseudo-random num algorithm found at https://www.geeksforgeeks.org/pseudo-random-number-generator-prng/
 		ranNum <= (3*ranNum + rand_count) % (score);	//generating a random value
 		ranNumTen <= ranNum % 10;		//mapping that random value to between 0 and 9 for target selection
@@ -24,10 +21,9 @@ always @(posedge clock) begin
 		if(rand_count >= 32'd2000000) begin
 			rand_count <= 32'd0;
 		end
-	//	counter <= 32'd0;
-	//end else begin
-	//	counter <= counter + 1;
-	//end
+		if (ranNumTen < 32'd0 || ranNumTen > 32'd9) begin
+			ranNumTen[3] <= 1'b0;
+		end
 end
 
 endmodule

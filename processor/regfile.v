@@ -29,10 +29,37 @@ module regfile(
 	
 	always @(posedge clock)
 	begin
-			if(ctrl_writeEnable && ctrl_writeReg != 5'd0 && ctrl_writeReg != 5'd1 && ctrl_writeReg != 5'd2 && ctrl_writeReg != 5'd3
-				&& ctrl_writeReg != 5'd6 && ctrl_writeReg != 5'd7 && ctrl_writeReg != 5'd8)
-				registers[ctrl_writeReg] = data_writeReg;
+		if (ctrl_writeReg == 5'd4 && data_writeReg[3:0] > 4'd9) begin
+			registers[4][31:4] <= data_writeReg[31:4];
+			if (data_writeReg[3:0] == registers[5][3:0]) begin
+				if (registers[5] == 4'd0) begin
+					registers[4][3:0] <= 4'd9;
+				end else begin
+					registers[4][3:0] <= 4'd0;
+				end
+			end else begin
+				registers[4][2:0] <= data_writeReg[2:0];
+				registers[4][3] <= 1'b0;
+			end
+		end else if (ctrl_writeReg == 5'd5 && data_writeReg[3:0] > 4'd9) begin
+			registers[5][31:4] <= data_writeReg[31:4];
+			if (data_writeReg[3:0] == registers[4][3:0]) begin
+				if (registers[4] == 4'd0) begin
+					registers[5][3:0] <= 4'd9;
+				end else begin
+					registers[5][3:0] <= 4'd0;
+				end
+			end else begin
+				registers[5][2:0] <= data_writeReg[2:0];
+				registers[5][3] <= 1'b0;
+			end
+		
+		end else if(ctrl_writeEnable && ctrl_writeReg != 5'd0 && ctrl_writeReg != 5'd1 && ctrl_writeReg != 5'd2 && ctrl_writeReg != 5'd3
+			&& ctrl_writeReg != 5'd6 && ctrl_writeReg != 5'd7 && ctrl_writeReg != 5'd8)
+			registers[ctrl_writeReg] = data_writeReg;
 				
+				
+		registers[0] <= 32'b0;
 		registers[1] <= bp_write;
 		registers[2] <= t1hit_write;
 		registers[3] <= t2hit_write;

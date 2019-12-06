@@ -166,33 +166,43 @@ BEGIN
 
 0080 : 11011100000000000000000000000000; -- 	randn $rand
 
-0081 : 00010100000010000000000000000001; -- 		bne $rand, $t0active, equalactive1	#if same as active target 1, generate new random number
+0081 : 00000000000000000000000000000000; -- nop
 
-0082 : 00001000000000000000000001010000; -- 		j generaterand
+0082 : 00000000000000000000000000000000; -- nop
 
-0083 : 00010100000010100000000000000001; -- 		bne $rand, $t1active, checkingcivilians	#if same as active target 2, generate new random number
+0083 : 00000000000000000000000000000000; -- nop
 
-0084 : 00001000000000000000000001010000; -- 		j generaterand
+0084 : 00000000000000000000000000000000; -- nop
 
-0085 : 00101111010000000000000000000100; -- 	addi $r29, $r0, 4	#$r29 = 4, used for blt checking if a target is a civilian
+0085 : 00000000000000000000000000000000; -- nop #see if it's a  bypass thing
 
-0086 : 00010101100000000000000000000010; -- 		bne $activetarget, $r0, active1		#if t0active is staying on, stay here and check active0 otherwise jump to check t1active
+0086 : 00010100000010000000000000000001; -- 		bne $rand, $t0active, equalactive1	#if same as active target 1, generate new random number
 
-0087 : 00110001001110100000000000000011; -- 			blt $t0active, $r29, activecivilian	#if t0active is a civilian, jump to activecivilian, if its not, jump to end
+0087 : 00001000000000000000000001010000; -- 		j generaterand
 
-0088 : 00001000000000000000000001011110; -- 				j endgeneraterand
+0088 : 00010100000010100000000000000001; -- 		bne $rand, $t1active, checkingcivilians	#if same as active target 2, generate new random number
 
-0089 : 00110001011110100000000000000001; -- 		blt $t1active, $r29, activecivilian	#if active1 is a civilian, jump to active civilian, if it's not, jump to end
+0089 : 00001000000000000000000001010000; -- 		j generaterand
 
-0090 : 00001000000000000000000001011110; -- 			j endgeneraterand
+0090 : 00101111010000000000000000000100; -- 	addi $r29, $r0, 4	#$r29 = 4, used for blt checking if a target is a civilian
 
-0091 : 00101111010000000000000000000100; -- 		addi $r29, $r0, 4	#$r29 = 4, used for blt checking if a target is a civilian
+0091 : 00010101100000000000000000000010; -- 		bne $activetarget, $r0, active1		#if t0active is staying on, stay here and check active0 otherwise jump to check t1active
 
-0092 : 00110100001110111111111111110011; -- 		blt $rand, $r29, generaterand	#if randn is a civilian, generate a new random number
+0092 : 00110001001110100000000000000011; -- 			blt $t0active, $r29, activecivilian	#if t0active is a civilian, jump to activecivilian, if its not, jump to end
 
-0093 : 00001000000000000000000001011110; -- 			j endgeneraterand
+0093 : 00001000000000000000000001100011; -- 				j endgeneraterand
 
-0094 : 00100111110000000000000000000000; -- 		jr $ra
+0094 : 00110001011110100000000000000001; -- 		blt $t1active, $r29, activecivilian	#if active1 is a civilian, jump to active civilian, if it's not, jump to end
 
-[0095..4095] : 00000000000000000000000000000000;
+0095 : 00001000000000000000000001100011; -- 			j endgeneraterand
+
+0096 : 00101111010000000000000000000100; -- 		addi $r29, $r0, 4	#$r29 = 4, used for blt checking if a target is a civilian
+
+0097 : 00110100001110111111111111101110; -- 		blt $rand, $r29, generaterand	#if randn is a civilian, generate a new random number
+
+0098 : 00001000000000000000000001100011; -- 			j endgeneraterand
+
+0099 : 00100111110000000000000000000000; -- 		jr $ra
+
+[0100..4095] : 00000000000000000000000000000000;
 END;

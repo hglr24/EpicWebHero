@@ -139,6 +139,11 @@ j gameloop
 #IMPORTANT: before calling this function, set $activetarget to be 0 or 1 dependending on which active target register is going to be remaining active (ie 	#not replaced by this new random number - this is used for the no two civilians bit
 generaterand:
 	randn $rand
+nop
+nop
+nop
+nop
+nop #see if it's a  bypass thing
 	
 	#checking if the generated number is the same as the current active targets
 	equalactive0:
