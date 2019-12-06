@@ -14,7 +14,7 @@ BEGIN
 
 0004 : 00101011010000000000000001100100; -- addi $civilianscore, $r0, 100	#$r13 = 100, score to be subtracted if civilian hit
 
-0005 : 00101011100000000000000011001000; -- addi $villainscore, $r0, 200	#$r14 = 200, score to be added if villain hit
+0005 : 00101011100000000000000010010110; -- addi $villainscore, $r0, 150   #$r14 = 200, score to be added if villain hit
 
 0006 : 00101011110000000000000000000001; -- addi $one, $r0, 1		#$r15 = 1, often need to compare a reg to number 1
 
